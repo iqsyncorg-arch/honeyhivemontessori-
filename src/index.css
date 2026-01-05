@@ -1,0 +1,173 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Nunito:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Main brand colors - Warm preschool palette */
+    --background: 35 100% 98%;
+    --foreground: 180 75% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 180 75% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 180 75% 20%;
+
+    /* Deep teal - Primary brand color */
+    --primary: 183 77% 22%;
+    --primary-foreground: 35 100% 98%;
+
+    /* Warm cream/beige - Secondary */
+    --secondary: 35 100% 96%;
+    --secondary-foreground: 180 75% 20%;
+
+    --muted: 35 50% 93%;
+    --muted-foreground: 180 30% 40%;
+
+    /* Warm orange - Accent */
+    --accent: 38 91% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Coral/Pink for highlights */
+    --highlight: 350 85% 65%;
+    --highlight-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 35 30% 88%;
+    --input: 35 30% 88%;
+    --ring: 183 77% 22%;
+
+    --radius: 1rem;
+
+    /* Custom design tokens */
+    --gradient-hero: linear-gradient(135deg, hsl(35 100% 98%) 0%, hsl(35 80% 95%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(38 91% 55%) 0%, hsl(350 85% 65%) 100%);
+    --gradient-teal: linear-gradient(135deg, hsl(183 77% 22%) 0%, hsl(180 60% 30%) 100%);
+    
+    --shadow-soft: 0 4px 20px -4px hsl(183 77% 22% / 0.1);
+    --shadow-card: 0 8px 30px -8px hsl(183 77% 22% / 0.15);
+    --shadow-glow: 0 0 40px hsl(38 91% 55% / 0.3);
+
+    /* Fonts */
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Nunito', sans-serif;
+
+    /* Sidebar */
+    --sidebar-background: 35 100% 98%;
+    --sidebar-foreground: 180 75% 20%;
+    --sidebar-primary: 183 77% 22%;
+    --sidebar-primary-foreground: 35 100% 98%;
+    --sidebar-accent: 38 91% 55%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 35 30% 88%;
+    --sidebar-ring: 183 77% 22%;
+  }
+
+  .dark {
+    --background: 180 50% 8%;
+    --foreground: 35 100% 98%;
+
+    --card: 180 40% 12%;
+    --card-foreground: 35 100% 98%;
+
+    --popover: 180 40% 12%;
+    --popover-foreground: 35 100% 98%;
+
+    --primary: 38 91% 55%;
+    --primary-foreground: 180 75% 10%;
+
+    --secondary: 180 30% 18%;
+    --secondary-foreground: 35 100% 98%;
+
+    --muted: 180 30% 20%;
+    --muted-foreground: 35 50% 70%;
+
+    --accent: 38 91% 55%;
+    --accent-foreground: 180 75% 10%;
+
+    --highlight: 350 85% 65%;
+    --highlight-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 180 30% 20%;
+    --input: 180 30% 20%;
+    --ring: 38 91% 55%;
+
+    --sidebar-background: 180 50% 8%;
+    --sidebar-foreground: 35 100% 98%;
+    --sidebar-primary: 38 91% 55%;
+    --sidebar-primary-foreground: 180 75% 10%;
+    --sidebar-accent: 180 30% 18%;
+    --sidebar-accent-foreground: 35 100% 98%;
+    --sidebar-border: 180 30% 20%;
+    --sidebar-ring: 38 91% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+@layer components {
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-accent);
+  }
+
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .bg-gradient-accent {
+    background: var(--gradient-accent);
+  }
+
+  .bg-gradient-teal {
+    background: var(--gradient-teal);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+}
+
+@layer utilities {
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+  .animation-delay-600 {
+    animation-delay: 600ms;
+  }
+}
