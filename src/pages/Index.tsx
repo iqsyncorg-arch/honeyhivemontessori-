@@ -1,4 +1,4 @@
- import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/layout/Layout";
@@ -23,34 +23,37 @@ import {
   School,
 } from "lucide-react";
 
+// Brand Colors Configuration
+const COLORS = {
+  primaryYellow: "#FFD22F",
+  secondaryBrown: "#3B2A1A",
+  accentLightYellow: "#FFE873",
+};
+
 const homePrograms = [
   {
     name: "Grub (Playgroup)",
     age: "2 – 3 years",
-    description:
-      "A gentle introduction to school life through play, routine, and motor skill development.",
-    color: "bg-accent/20",
+    description: "A gentle introduction to school life through play, routine, and motor skill development.",
+    color: "bg-[#FFD22F]/10",
   },
   {
     name: "Brood (Pre-Kg)",
     age: "3 – 4 years",
-    description:
-      "Focused on independence and sensorial exploration through early Montessori activities.",
-    color: "bg-primary/10",
+    description: "Focused on independence and sensorial exploration through early Montessori activities.",
+    color: "bg-[#FFE873]/20",
   },
   {
     name: "Junior Bees (LKG)",
     age: "4 – 5 years",
-    description:
-      "Building a strong foundation in language, numeracy, and practical life skills.",
-    color: "bg-highlight/20",
+    description: "Building a strong foundation in language, numeracy, and practical life skills.",
+    color: "bg-[#FFD22F]/10",
   },
   {
     name: "Senior Bees (UKG)",
     age: "5 – 6 years",
-    description:
-      "Advanced readiness for primary school with a focus on leadership and academics.",
-    color: "bg-accent/20",
+    description: "Advanced readiness for primary school with a focus on leadership and academics.",
+    color: "bg-[#FFE873]/20",
   },
 ];
 
@@ -107,7 +110,7 @@ const Index = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-hero">
+      <section className="relative overflow-hidden bg-[#FFD22F]/5">
         <div className="container mx-auto px-4 py-16 lg:py-24">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -116,23 +119,32 @@ const Index = () => {
               transition={{ duration: 0.8 }}
               className="space-y-6"
             >
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold leading-tight">
-                Honey Hive <span className="text-gradient">Preschool</span>
-                <br />& <span className="text-highlight">Daycare</span>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold leading-tight text-[#3B2A1A]">
+                Honey Hive <span className="text-[#FFD22F]"> Montessori House</span>
+                
               </h1>
-              <p className="text-xl md:text-2xl font-heading italic text-foreground/80">
+              <p className="text-xl md:text-2xl font-heading italic text-[#3B2A1A]/70">
                 Curious Today, Confident Tomorrow.
               </p>
-              <p className="text-muted-foreground font-body text-lg max-w-lg">
+              <p className="text-[#3B2A1A]/60 font-body text-lg max-w-lg">
                 At Honey Hive Montessori House, we believe every child is born
                 curious. We nurture that curiosity with love, play, and learning
                 that inspires confidence for life.
               </p>
               <div className="flex flex-wrap gap-4 pt-4">
-                <Button variant="hero" size="xl" asChild>
+                <Button 
+                  style={{ backgroundColor: COLORS.primaryYellow, color: COLORS.secondaryBrown }}
+                  className="font-bold px-8 py-6 rounded-full hover:opacity-90 transition-all"
+                  asChild
+                >
                   <Link to="/admissions">Admission Open</Link>
                 </Button>
-                <Button variant="hero-outline" size="xl" asChild>
+                <Button 
+                  variant="outline"
+                  style={{ borderColor: COLORS.secondaryBrown, color: COLORS.secondaryBrown }}
+                  className="px-8 py-6 rounded-full hover:bg-[#3B2A1A] hover:text-white transition-all"
+                  asChild
+                >
                   <Link to="/admissions">Book A School Tour</Link>
                 </Button>
               </div>
@@ -144,7 +156,7 @@ const Index = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="relative"
             >
-              <div className="relative rounded-3xl overflow-hidden shadow-card">
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-[#FFD22F]">
                 <video
                   src={heroImage}
                   autoPlay
@@ -154,20 +166,20 @@ const Index = () => {
                   className="w-full h-[400px] lg:h-[500px] object-cover"
                 />
               </div>
-
-              {/* Decorative elements */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-accent/30 rounded-full blur-2xl" />
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-highlight/20 rounded-full blur-2xl" />
+              <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#FFD22F]/30 rounded-full blur-2xl" />
+              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-[#3B2A1A]/10 rounded-full blur-2xl" />
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Marquee */}
-      <Marquee text="Curious Today – Confident Tomorrow | We Inspire to Create Curiosity" />
+      {/* Marquee - Primary Yellow with Brown Text */}
+      <div className="bg-[#FFD22F] py-2">
+        <Marquee text="Curious Today – Confident Tomorrow | We Inspire to Create Curiosity" className="text-[#3B2A1A] font-bold" />
+      </div>
 
       {/* What is Early Childhood Education */}
-      <section className="py-20 bg-secondary">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -177,10 +189,10 @@ const Index = () => {
               transition={{ duration: 0.6 }}
               className="space-y-6"
             >
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-foreground">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-[#3B2A1A]">
                 What is Early Childhood Education?
               </h2>
-              <p className="text-muted-foreground font-body text-lg">
+              <p className="text-[#3B2A1A]/70 font-body text-lg">
                 With us, childhood is celebrated, imagination takes flight, and
                 little sparks grow into bright futures.
               </p>
@@ -193,33 +205,27 @@ const Index = () => {
                 ].map((item, i) => (
                   <motion.li
                     key={i}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: i * 0.1 }}
                     className="flex items-start gap-3"
                   >
-                    <CheckCircle2 className="w-6 h-6 text-accent shrink-0 mt-0.5" />
-                    <span className="font-body text-foreground">{item}</span>
+                    <CheckCircle2 className="w-6 h-6 text-[#FFD22F] shrink-0 mt-0.5" />
+                    <span className="font-body text-[#3B2A1A]">{item}</span>
                   </motion.li>
                 ))}
               </ul>
-              <Button variant="accent" size="lg" asChild>
+              <Button 
+                style={{ backgroundColor: COLORS.secondaryBrown, color: "#FFFFFF" }}
+                className="px-8 py-4 rounded-xl"
+                asChild
+              >
                 <Link to="/admissions">Book A Tour</Link>
               </Button>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="relative"
-            >
+            <motion.div className="relative">
               <img
                 src={artImage}
                 alt="Children doing creative art activities"
-                className="rounded-3xl shadow-card w-full"
+                className="rounded-3xl shadow-xl w-full border-b-8 border-r-8 border-[#FFD22F]"
               />
             </motion.div>
           </div>
@@ -227,7 +233,7 @@ const Index = () => {
       </section>
 
       {/* Why Choose Summary Icons */}
-      <section className="py-20">
+      <section className="py-20 bg-[#FFD22F]/5">
         <div className="container mx-auto px-4">
           <SectionHeading
             title="Why choose Honey Hive Montessori House?"
@@ -238,16 +244,12 @@ const Index = () => {
             {whyChooseUs.map((item, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="bg-card p-6 rounded-2xl shadow-soft text-center hover:shadow-card transition-shadow duration-300"
+                className="bg-white p-6 rounded-2xl shadow-sm text-center border border-[#FFD22F]/20 hover:border-[#FFD22F] transition-all"
               >
-                <div className="w-14 h-14 mx-auto mb-4 bg-primary/10 rounded-2xl flex items-center justify-center">
-                  <item.icon className="w-7 h-7 text-primary" />
+                <div className="w-14 h-14 mx-auto mb-4 bg-[#FFD22F]/20 rounded-2xl flex items-center justify-center">
+                  <item.icon className="w-7 h-7 text-[#3B2A1A]" />
                 </div>
-                <p className="font-body font-semibold text-foreground text-sm">
+                <p className="font-body font-bold text-[#3B2A1A] text-sm">
                   {item.text}
                 </p>
               </motion.div>
@@ -256,57 +258,38 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Curriculum Overview */}
-      <section className="py-20 bg-primary">
+      {/* Curriculum Overview - Brown Background Section */}
+      <section className="py-20 bg-[#3B2A1A] text-white">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
+            <motion.div>
               <img
                 src={classroomImage}
                 alt="Teacher with children in classroom"
-                className="rounded-3xl shadow-lg w-full"
+                className="rounded-3xl shadow-2xl w-full grayscale-[20%] hover:grayscale-0 transition-all border-4 border-[#FFD22F]"
               />
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-primary-foreground space-y-6"
-            >
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold">
+            <motion.div className="space-y-6">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-[#FFD22F]">
                 Curriculum Overview
               </h2>
-              <p className="text-primary-foreground/80 font-body text-lg">
-                Our curriculum integrates play, inquiry, and discovery through
-                thoughtfully designed experiences — laying a strong and lasting
-                foundation for your child’s future.
-              </p>
               <div className="space-y-4">
-                <h3 className="text-xl font-heading font-semibold text-accent">
+                <h3 className="text-xl font-heading font-semibold text-[#FFE873]">
                   Learner's First Approach
                 </h3>
-                <p className="text-primary-foreground/80 font-body">
+                <p className="text-white/80 font-body leading-relaxed">
                   At Honey Hive Montessori House, everything begins with the
-                  learner your child. We believe every child is unique, curious,
+                  learner—your child. We believe every child is unique, curious,
                   and naturally capable of growth when nurtured in the right
-                  environment. Our role is to guide, observe, and support rather
-                  than instruct allowing children to discover, explore, and
-                  build confidence at their own pace. Growth, One Small Step at
-                  a Time We celebrate every tiny milestone a new word, a solved
-                  puzzle, a shared toy, a kind gesture. These moments may seem
-                  small, but together they build a strong foundation for
-                  lifelong learning. Our calm, engaging classrooms encourage
-                  independence, self-discipline, and joyful discovery.
+                  environment. Our role is to guide, observe, and support...
                 </p>
               </div>
-              <Button variant="accent" size="lg" className="mt-4" asChild>
+              <Button 
+                style={{ backgroundColor: COLORS.primaryYellow, color: COLORS.secondaryBrown }}
+                className="font-bold px-8 py-4"
+                asChild
+              >
                 <Link to="/programs">Learn More</Link>
               </Button>
             </motion.div>
@@ -326,278 +309,135 @@ const Index = () => {
             {homePrograms.map((program, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                className={`${program.color} p-6 rounded-3xl hover:shadow-card transition-all duration-300 flex flex-col justify-between`}
+                className={`${program.color} p-6 rounded-3xl border-2 border-[#FFD22F]/10 hover:border-[#FFD22F] transition-all flex flex-col justify-between h-full`}
               >
                 <div>
                   <div className="mb-4">
-                    <span className="inline-block px-3 py-1 bg-primary text-primary-foreground text-sm font-body font-semibold rounded-full">
+                    <span className="inline-block px-3 py-1 bg-[#3B2A1A] text-white text-xs font-bold rounded-full">
                       {program.age}
                     </span>
                   </div>
-                  <h3 className="text-xl font-heading font-bold text-foreground mb-3">
+                  <h3 className="text-xl font-heading font-bold text-[#3B2A1A] mb-3">
                     {program.name}
                   </h3>
-                  <p className="text-muted-foreground font-body text-sm">
+                  <p className="text-[#3B2A1A]/70 font-body text-sm">
                     {program.description}
                   </p>
                 </div>
               </motion.div>
             ))}
           </div>
-
-          <div className="text-center mt-12">
-            <Button variant="default" size="lg" asChild>
-              <Link to="/programs">Explore All Programs</Link>
-            </Button>
-          </div>
         </div>
       </section>
 
-      {/* Why Choose Honey Hive? (Replaces Signature Programs) */}
-      <section className="py-20 bg-secondary">
+      {/* Meal Planner - Color Themed to Honey/Hive */}
+      <section className="py-20 bg-[#FDFCFB] border-y border-[#FFD22F]/20">
         <div className="container mx-auto px-4">
-          <SectionHeading 
-            title="Why Choose Honey Hive?" 
-            subtitle="The Hive difference: Where quality education meets heartfelt care"
+          <SectionHeading
+            title="The Honey Pot Meal Planner"
+            subtitle="Nutritious & fun weekly snack guidance to keep our bees buzzing"
           />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {reasons.map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="group bg-card p-6 rounded-3xl shadow-soft hover:shadow-card transition-all duration-300 border border-transparent hover:border-primary/20"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                    <item.icon className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-heading font-bold text-foreground mb-2">
-                      {item.title}
-                    </h3>
-                    <p className="text-muted-foreground font-body text-sm leading-relaxed">
-                      {item.description}
-                    </p>
-                  </div>
+          <div className="grid lg:grid-cols-2 gap-10">
+            {/* Left Side: Monday & Thursday */}
+            <div className="space-y-10">
+              {/* Monday */}
+              <div className="group bg-white rounded-[2rem] shadow-sm border-l-8 border-[#3B2A1A] p-8 transition-all hover:shadow-md">
+                <span className="text-[#3B2A1A] text-xs font-bold uppercase tracking-widest">Energy Grains</span>
+                <h3 className="text-3xl font-heading font-bold text-[#3B2A1A] mb-4">Millet Monday</h3>
+                <div className="flex flex-wrap gap-2">
+                  {["Poridge", "Dosa", "Cookies", "Idli", "Millet Veg Balls", "Kichidi", "Millet Salad", "Upma", "Millet Cutlets", "Pongal", "Millet Ladoo", "Kheer"].map((item) => (
+                    <span key={item} className="px-3 py-1 bg-[#FFD22F]/10 text-[#3B2A1A] rounded-full text-sm font-medium border border-[#FFD22F]/20">
+                      {item}
+                    </span>
+                  ))}
                 </div>
-              </motion.div>
-            ))}
+              </div>
+
+              {/* Thursday */}
+              <div className="group bg-white rounded-[2rem] shadow-sm border-l-8 border-[#FFD22F] p-8 transition-all hover:shadow-md">
+                <span className="text-[#3B2A1A]/60 text-xs font-bold uppercase tracking-widest">Power Protein</span>
+                <h3 className="text-3xl font-heading font-bold text-[#3B2A1A] mb-4">Tasty Thursday</h3>
+                <div className="flex flex-wrap gap-2">
+                  {["Dates", "Peanuts", "Milk Shakes", "Makhana", "Smoothies", "Yogurt", "Nuts", "Granola Bars", "Raisins", "Mac N Cheese", "Sweet Corn", "Fig Bar"].map((item) => (
+                    <span key={item} className="px-3 py-1 bg-[#3B2A1A]/5 text-[#3B2A1A] rounded-full text-sm font-medium border border-[#3B2A1A]/10">
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Right Side: Tuesday, Wednesday, Friday */}
+            <div className="space-y-6">
+              <div className="bg-[#FFE873]/20 rounded-3xl p-6 border border-[#FFD22F]/30">
+                <h4 className="font-bold text-[#3B2A1A] mb-2 flex items-center gap-2">
+                  <Star className="w-4 h-4 fill-[#3B2A1A]" /> Tuesday: Treats
+                </h4>
+                <p className="text-sm text-[#3B2A1A]/80">Pancakes, Muffins, Waffles, and Savory Biscuits.</p>
+              </div>
+              <div className="bg-[#FFD22F]/10 rounded-3xl p-6 border border-[#FFD22F]/30">
+                <h4 className="font-bold text-[#3B2A1A] mb-2 flex items-center gap-2">
+                  <Star className="w-4 h-4 fill-[#3B2A1A]" /> Wednesday: Wraps
+                </h4>
+                <p className="text-sm text-[#3B2A1A]/80">DIY Veg Wraps, Paneer Rolls, and Cheese Frankie.</p>
+              </div>
+              <div className="bg-[#3B2A1A]/5 rounded-3xl p-6 border border-[#3B2A1A]/10">
+                <h4 className="font-bold text-[#3B2A1A] mb-2 flex items-center gap-2">
+                  <Star className="w-4 h-4 fill-[#3B2A1A]" /> Friday: Fruits
+                </h4>
+                <p className="text-sm text-[#3B2A1A]/80">Fresh seasonal fruits, Fruit Cups, and Dried Berries.</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-{/* Meal Planner */}
-<section className="py-20 bg-[#FDFCFB]">
-  <div className="container mx-auto px-4">
-    <SectionHeading
-      title="Meal Planner"
-      subtitle="Nutritious & fun weekly snack guidance for our little learners"
-    />
-
-    <div className="grid lg:grid-cols-2 gap-10">
-      
-      {/* LEFT SIDE BLOCKS */}
-      <div className="space-y-10">
-
-        {/* Millet Monday */}
-        <div className="group bg-white rounded-[2rem] shadow-sm border border-slate-100 p-8 relative overflow-hidden transition-all hover:shadow-md">
-          <div className="absolute top-0 left-0 w-2 h-full bg-teal-500" />
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <span className="text-teal-600 text-xs font-bold uppercase tracking-widest">Energy Grains</span>
-              <h3 className="text-3xl font-heading font-bold text-slate-800">Millet Monday</h3>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {["Poridge", "Dosa", "Cookies", "Idli", "Millet Veg Balls", "Kichidi", "Millet Salad", "Upma", "Millet Cutlets", "Pongal", "Millet Ladoo", "Kheer"].map((item) => (
-              <span key={item} className="px-4 py-1.5 bg-teal-50 text-teal-700 rounded-full text-sm font-medium border border-teal-100/50">
-                {item}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Tasty Thursday */}
-        <div className="group bg-white rounded-[2rem] shadow-sm border border-slate-100 p-8 relative overflow-hidden transition-all hover:shadow-md">
-          <div className="absolute top-0 left-0 w-2 h-full bg-blue-500" />
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <span className="text-blue-600 text-xs font-bold uppercase tracking-widest">Power Protein</span>
-              <h3 className="text-3xl font-heading font-bold text-slate-800">Tasty Thursday</h3>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {["Dates", "Peanuts", "Milk Shakes", "Makhana", "Smoothies", "Yogurt", "Nuts", "Granola Bars", "Raisins", "Mac N Cheese", "Sweet Corn", "Fig Bar"].map((item) => (
-              <span key={item} className="px-4 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-100/50">
-                {item}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* RIGHT SIDE BLOCKS */}
-      <div className="space-y-10">
-
-        {/* Treats Tuesday */}
-        <div className="group bg-white rounded-[2rem] shadow-sm border border-slate-100 p-8 relative overflow-hidden transition-all hover:shadow-md">
-          <div className="absolute top-0 left-0 w-2 h-full bg-orange-500" />
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <span className="text-orange-600 text-xs font-bold uppercase tracking-widest">Little Delights</span>
-              <h3 className="text-3xl font-heading font-bold text-slate-800">Treats Tuesday</h3>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {["Tart / Pie", "Cakes", "Pancake", "Popcorn", "Donut", "Sandwich", "Fries", "Muffins", "Cookies", "Savory", "Biscuits", "Waffle"].map((item) => (
-              <span key={item} className="px-4 py-1.5 bg-orange-50 text-orange-700 rounded-full text-sm font-medium border border-orange-100/50">
-                {item}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Wrap-up Wednesday */}
-        <div className="group bg-white rounded-[2rem] shadow-sm border border-slate-100 p-8 relative overflow-hidden transition-all hover:shadow-md">
-          <div className="absolute top-0 left-0 w-2 h-full bg-amber-500" />
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <span className="text-amber-600 text-xs font-bold uppercase tracking-widest">Creative Rolls</span>
-              <h3 className="text-3xl font-heading font-bold text-slate-800">Wrap-up Wednesday</h3>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {["DIY Veg Wrap", "Nugget Roll", "DIY Tortilla", "DIY Pizza", "DIY Frankie", "Paneer Roll", "DIY Burritos", "Cheese Roll", "Chocolate Roll", "Paratha Roll", "Nutella Roll", "Spinach Roll"].map((item) => (
-              <span key={item} className="px-4 py-1.5 bg-amber-50 text-amber-700 rounded-full text-sm font-medium border border-amber-100/50">
-                {item}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Fruits Friday */}
-        <div className="group bg-white rounded-[2rem] shadow-sm border border-slate-100 p-8 relative overflow-hidden transition-all hover:shadow-md">
-          <div className="absolute top-0 left-0 w-2 h-full bg-green-500" />
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <span className="text-green-600 text-xs font-bold uppercase tracking-widest">Fresh Vitamins</span>
-              <h3 className="text-3xl font-heading font-bold text-slate-800">Fruits Friday</h3>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {["Apple", "Kiwi", "Orange", "Banana", "Guava", "Mango", "Berries", "Fruit Cups", "Pineapple", "Dried Fruit", "Watermelon", "Grapes"].map((item) => (
-              <span key={item} className="px-4 py-1.5 bg-green-50 text-green-700 rounded-full text-sm font-medium border border-green-100/50">
-                {item}
-              </span>
-            ))}
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-</section>
       {/* Testimonials */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <SectionHeading
-            title="What Parents Say About Us"
-            subtitle="Real stories from families who trust Honey Hive Montessori House"
+            title="What Parents Say"
+            subtitle="Voices from the Hive"
           />
-
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              {
-                name: "Gayatri Dash",
-                avatar: "/avatars/gayatri.jpg",
-                message:
-                  "This school offers a truly nurturing and positive environment where children thrive both academically and emotionally. The students are incredibly warm, well-mannered, and full of enthusiasm, which speaks volumes about the values being instilled in them. The overall atmosphere is filled with positivity, making it a wonderful place for young minds to grow and flourish.",
-              },
-              {
-                name: "Nithya Malli",
-                avatar: "/avatars/nithya.jpg",
-                message:
-                  "I highly recommend Honey Hive Montessori House, as it is a safe and apt place for my kid’s growth and development. Teachers are so talented and down-to-earth. My child loves going to school because learning happens through joyful activities and loving care.",
-              },
-              {
-                name: "Deebiga Karunakaran",
-                avatar: "/avatars/deebiga.jpg",
-                message:
-                  "This Montessori house is the best place for tiny hearts to grow, play, and mingle with friends. Both mam’s are so dedicated and caring. My son feels at home here — he is always excited to go to school!",
-              },
+              { name: "Gayatri Dash", message: "This school offers a truly nurturing and positive environment where children thrive both academically and emotionally." },
+              { name: "Nithya Malli", message: "I highly recommend Honey Hive Montessori House. My child loves going to school because learning happens through joyful activities." },
+              { name: "Deebiga Karunakaran", message: "Best place for tiny hearts to grow. Both mam’s are so dedicated and caring. My son feels at home here." },
             ].map((review, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="bg-card p-6 rounded-2xl shadow-soft hover:shadow-card transition-all duration-300"
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center font-bold text-accent">
-                    {review.name.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="font-heading font-semibold text-foreground">
-                      {review.name}
-                    </p>
-                    <div className="flex items-center gap-1">
-                      {[...Array(5)].map((_, index) => (
-                        <Star key={index} className="text-yellow-500 fill-yellow-500 w-4 h-4" />
-                      ))}
-                    </div>
-                  </div>
+              <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-[#FFD22F]">
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(5)].map((_, index) => (
+                    <Star key={index} className="text-[#FFD22F] fill-[#FFD22F] w-4 h-4" />
+                  ))}
                 </div>
-                <p className="text-muted-foreground font-body leading-relaxed text-sm">
-                  "{review.message}"
-                </p>
-              </motion.div>
+                <p className="text-[#3B2A1A]/80 italic mb-4">"{review.message}"</p>
+                <p className="font-bold text-[#3B2A1A]">— {review.name}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-teal">
+      {/* CTA Section - Primary Yellow */}
+      <section className="py-20 bg-[#FFD22F]">
         <div className="container mx-auto px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="max-w-3xl mx-auto space-y-6"
-          >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-primary-foreground">
-              Ready to Join the Honey Hive Montessori House Family?
-            </h2>
-            <p className="text-primary-foreground/80 font-body text-lg">
-              Give your child the gift of a nurturing, inspiring start. Schedule
-              a tour today and see why Honey Hive Montessori House is the
-              perfect place for your little one to learn, grow, and shine.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 pt-4">
-              <Button variant="accent" size="xl" className="shadow-lg" asChild>
-                <Link to="/admissions">Apply Now</Link>
-              </Button>
-              <Button
-                variant="outline"
-                size="xl"
-                className="border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/10"
-                asChild
-              >
-                <Link to="/contact">Contact Us</Link>
-              </Button>
-            </div>
-          </motion.div>
+          <h2 className="text-3xl md:text-5xl font-heading font-bold text-[#3B2A1A] mb-6">
+            Ready to Join the Family?
+          </h2>
+          <p className="text-[#3B2A1A]/80 font-body text-lg max-w-2xl mx-auto mb-10">
+            Give your child the gift of a nurturing start. Schedule a tour today and see why Honey Hive is the perfect place for your little one.
+          </p>
+          <div className="flex justify-center gap-4">
+            <Button 
+              style={{ backgroundColor: COLORS.secondaryBrown, color: "#FFFFFF" }}
+              className="px-10 py-7 text-lg rounded-full"
+              asChild
+            >
+              <Link to="/admissions">Apply Now</Link>
+            </Button>
+          </div>
         </div>
       </section>
     </Layout>

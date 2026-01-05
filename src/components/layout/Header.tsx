@@ -18,24 +18,26 @@ const Header = () => {
   const location = useLocation();
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b border-border">
+    <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-[#FFD22F]/20">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
+          {/* Logo Section */}
+          <Link to="/" className="flex items-center gap-2 group">
             <div className="flex items-center gap-2">
               <img
                 src="/src/assets/logo.png"
                 alt="Honey Hive Montessori House Logo"
-                className="h-14 w-14 object-contain"
+                className="h-14 w-14 object-contain transition-transform group-hover:scale-105"
               />
-              <span className="text-2xl md:text-3xl font-heading font-bold text-primary">
-                Honey Hive
-                <span className="text-highlight"> Montessori House</span>
-              </span>
+              <div className="flex flex-col justify-center">
+                <span className="text-xl md:text-2xl font-heading font-bold leading-tight text-[#FFD22F]">
+                  Honey Hive
+                </span>
+                <span className="text-sm md:text-base font-heading font-semibold leading-tight text-[#3B2A1A]">
+                   Montessori House
+                </span>
+              </div>
             </div>
-
-            <span className="hidden md:block text-xs text-muted-foreground font-body"></span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -44,10 +46,10 @@ const Header = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`px-4 py-2 rounded-full font-body font-medium text-sm transition-all duration-300 ${
+                className={`px-4 py-2 rounded-full font-body font-bold text-sm transition-all duration-300 ${
                   location.pathname === link.path
-                    ? "bg-primary text-primary-foreground"
-                    : "text-foreground hover:bg-primary/10"
+                    ? "bg-[#FFD22F] text-[#3B2A1A]"
+                    : "text-[#3B2A1A] hover:bg-[#FFD22F]/10 hover:text-[#FFD22F]"
                 }`}
               >
                 {link.name}
@@ -57,7 +59,12 @@ const Header = () => {
 
           {/* CTA Button */}
           <div className="hidden lg:block">
-            <Button variant="accent" size="lg" asChild>
+            <Button 
+              style={{ backgroundColor: "#3B2A1A", color: "#FFFFFF" }}
+              className="font-bold rounded-full hover:opacity-90 transition-all border-none"
+              size="lg" 
+              asChild
+            >
               <Link to="/admissions">Book a Tour</Link>
             </Button>
           </div>
@@ -65,13 +72,13 @@ const Header = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="lg:hidden p-2 rounded-lg hover:bg-primary/10 transition-colors"
+            className="lg:hidden p-2 rounded-lg hover:bg-[#FFD22F]/10 transition-colors"
             aria-label="Toggle menu"
           >
             {isMenuOpen ? (
-              <X className="w-6 h-6 text-foreground" />
+              <X className="w-7 h-7 text-[#3B2A1A]" />
             ) : (
-              <Menu className="w-6 h-6 text-foreground" />
+              <Menu className="w-7 h-7 text-[#3B2A1A]" />
             )}
           </button>
         </nav>
@@ -84,28 +91,35 @@ const Header = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-background border-t border-border"
+            className="lg:hidden bg-white border-t border-[#FFD22F]/20 shadow-xl"
           >
-            <div className="container mx-auto px-4 py-4 flex flex-col gap-2">
+            <div className="container mx-auto px-4 py-6 flex flex-col gap-2">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`px-4 py-3 rounded-lg font-body font-medium transition-all duration-300 ${
+                  className={`px-6 py-4 rounded-2xl font-body font-bold text-lg transition-all duration-300 ${
                     location.pathname === link.path
-                      ? "bg-primary text-primary-foreground"
-                      : "text-foreground hover:bg-primary/10"
+                      ? "bg-[#FFD22F] text-[#3B2A1A]"
+                      : "text-[#3B2A1A] hover:bg-[#FFD22F]/5"
                   }`}
                 >
                   {link.name}
                 </Link>
               ))}
-              <Button variant="accent" size="lg" className="mt-4" asChild>
-                <Link to="/admissions" onClick={() => setIsMenuOpen(false)}>
-                  Book a Tour
-                </Link>
-              </Button>
+              <div className="pt-4 border-t border-[#FFD22F]/10 mt-2">
+                <Button 
+                  style={{ backgroundColor: "#3B2A1A", color: "#FFFFFF" }}
+                  size="xl" 
+                  className="w-full font-bold rounded-2xl py-7" 
+                  asChild
+                >
+                  <Link to="/admissions" onClick={() => setIsMenuOpen(false)}>
+                    Book a Tour
+                  </Link>
+                </Button>
+              </div>
             </div>
           </motion.div>
         )}

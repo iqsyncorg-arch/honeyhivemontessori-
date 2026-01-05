@@ -50,7 +50,7 @@ const Admissions = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-hero">
+      <section className="relative py-20 bg-[#FFD22F]/10 overflow-hidden">
         <div className="container mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -58,67 +58,99 @@ const Admissions = () => {
             transition={{ duration: 0.6 }}
             className="max-w-3xl mx-auto"
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-foreground mb-6">
-              Join the <span className="text-gradient">Honey Hive</span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-[#3B2A1A] mb-6">
+              Join the <span className="text-[#FFD22F]">Honey Hive</span>
             </h1>
-            <p className="text-muted-foreground font-body text-lg mb-8">
+            <p className="text-[#3B2A1A]/70 font-body text-lg mb-8">
               Admissions are open throughout the year, subject to seat availability. 
               Start your child's Montessori journey today.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button variant="hero" size="xl" asChild>
+              <Button 
+                style={{ backgroundColor: "#FFD22F", color: "#3B2A1A" }}
+                className="font-bold px-8 py-6 rounded-full hover:opacity-90 shadow-lg"
+                size="xl" 
+                asChild
+              >
                 <a href="#inquiry-form">Enroll Now</a>
               </Button>
-              <Button variant="hero-outline" size="xl" asChild>
+              <Button 
+                variant="outline" 
+                style={{ borderColor: "#3B2A1A", color: "#3B2A1A" }}
+                className="px-8 py-6 rounded-full hover:bg-[#3B2A1A] hover:text-white transition-all"
+                size="xl" 
+                asChild
+              >
                 <a href="tel:9952900051">Call to Schedule Visit</a>
               </Button>
             </div>
           </motion.div>
         </div>
+        {/* Decorative Hive Circles */}
+        <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#FFD22F]/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#FFE873]/30 rounded-full blur-3xl" />
       </section>
 
-      {/* Admission Process */}
-      <section className="py-20">
+      {/* HIGHLIGHTED Admission Process Section */}
+      <section className="py-24 bg-white">
         <div className="container mx-auto px-4">
-          <SectionHeading
-            title="Steps to Enroll"
-            subtitle="A simple three-step process to secure your child's future"
-          />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.98 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="bg-[#FFD22F]/5 border-2 border-dashed border-[#3B2A1A]/20 rounded-[3rem] p-8 md:p-16"
+          >
+            <SectionHeading
+              title="Steps to Enroll"
+              subtitle="A simple three-step process to secure your child's future"
+            />
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {admissionSteps.map((step, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="relative"
-              >
-                <div className="bg-card p-8 rounded-3xl shadow-soft text-center h-full border border-border hover:border-primary/20 transition-all">
-                  <div className="w-16 h-16 mx-auto mb-6 bg-accent rounded-2xl flex items-center justify-center text-accent-foreground">
-                    <step.icon className="w-8 h-8" />
+            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mt-12">
+              {admissionSteps.map((step, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  className="relative group"
+                >
+                  <div className="bg-white p-8 rounded-3xl shadow-sm border border-[#FFD22F]/30 group-hover:border-[#3B2A1A] group-hover:shadow-xl transition-all duration-300 text-center h-full flex flex-col items-center">
+                    
+                    {/* Icon Container */}
+                    <div className="w-20 h-20 mb-6 bg-[#FFD22F] rounded-2xl flex items-center justify-center text-[#3B2A1A] group-hover:rotate-6 transition-transform">
+                      <step.icon className="w-10 h-10" />
+                    </div>
+
+                    {/* Step Number Badge */}
+                    <div className="absolute top-6 right-6 w-10 h-10 bg-[#3B2A1A] rounded-full flex items-center justify-center shadow-md">
+                      <span className="text-[#FFD22F] font-bold text-lg">
+                        {i + 1}
+                      </span>
+                    </div>
+
+                    <h3 className="text-2xl font-heading font-bold text-[#3B2A1A] mb-4">
+                      {step.title}
+                    </h3>
+                    <p className="text-[#3B2A1A]/60 font-body text-sm leading-relaxed">
+                      {step.description}
+                    </p>
                   </div>
-                  <div className="absolute top-4 right-4 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                    <span className="text-primary font-bold text-sm">
-                      {i + 1}
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-heading font-bold text-foreground mb-3">
-                    {step.title}
-                  </h3>
-                  <p className="text-muted-foreground font-body text-sm leading-relaxed">
-                    {step.description}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </div>
+            
+            <div className="text-center mt-12">
+              <p className="text-[#3B2A1A] font-body font-semibold italic">
+                Need help? <a href="tel:9952900051" className="underline decoration-[#FFD22F] decoration-4 underline-offset-4">Give us a buzz!</a>
+              </p>
+            </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Inquiry Form & Contact Info */}
-      <section id="inquiry-form" className="py-20 bg-secondary scroll-mt-20">
+      <section id="inquiry-form" className="py-20 bg-[#FDFCFB] scroll-mt-20">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12">
             <motion.div
@@ -129,52 +161,52 @@ const Admissions = () => {
               className="space-y-8"
             >
               <div>
-                <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground mb-4">
+                <h2 className="text-3xl md:text-4xl font-heading font-bold text-[#3B2A1A] mb-4">
                   Experience Honey Hive
                 </h2>
-                <p className="text-muted-foreground font-body text-lg">
+                <p className="text-[#3B2A1A]/60 font-body text-lg">
                   Contact us today to schedule a visit and see how we celebrate 
                   childhood through discovery and joyful learning.
                 </p>
               </div>
 
               <div className="space-y-6">
-                <div className="flex items-center gap-4 bg-card p-4 rounded-2xl shadow-sm">
-                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-[#FFD22F]/10 hover:shadow-md transition-shadow">
+                  <div className="w-12 h-12 bg-[#FFD22F]/20 rounded-xl flex items-center justify-center text-[#3B2A1A]">
                     <Phone className="w-6 h-6" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Call Us</p>
-                    <p className="text-lg font-heading font-bold">9952900051 / 9790730051</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#3B2A1A]/40">Call Us</p>
+                    <p className="text-lg font-heading font-bold text-[#3B2A1A]">9952900051 / 9790730051</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 bg-card p-4 rounded-2xl shadow-sm">
-                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-[#FFD22F]/10 hover:shadow-md transition-shadow">
+                  <div className="w-12 h-12 bg-[#FFD22F]/20 rounded-xl flex items-center justify-center text-[#3B2A1A]">
                     <Mail className="w-6 h-6" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Email Us</p>
-                    <p className="text-lg font-heading font-bold">honeyhivechennai@gmail.com</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#3B2A1A]/40">Email Us</p>
+                    <p className="text-lg font-heading font-bold text-[#3B2A1A]">honeyhivechennai@gmail.com</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 bg-card p-4 rounded-2xl shadow-sm">
-                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-[#FFD22F]/10 hover:shadow-md transition-shadow">
+                  <div className="w-12 h-12 bg-[#FFD22F]/20 rounded-xl flex items-center justify-center text-[#3B2A1A]">
                     <Clock className="w-6 h-6" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Visit Hours</p>
-                    <p className="text-lg font-heading font-bold">Mon - Sat: 9:00 AM - 4:00 PM</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#3B2A1A]/40">Visit Hours</p>
+                    <p className="text-lg font-heading font-bold text-[#3B2A1A]">Mon - Sat: 9:00 AM - 4:00 PM</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-accent p-6 rounded-2xl text-accent-foreground">
-                <h3 className="text-lg font-heading font-bold mb-2 flex items-center gap-2">
+              <div className="bg-[#3B2A1A] p-6 rounded-2xl text-white shadow-xl">
+                <h3 className="text-lg font-heading font-bold mb-2 flex items-center gap-2 text-[#FFD22F]">
                    <MapPin className="w-5 h-5" /> Our Location
                 </h3>
-                <p className="font-body opacity-90">
+                <p className="font-body text-[#FFE873]">
                   Thoraipakkam, Chennai, Tamil Nadu.
                 </p>
               </div>
@@ -188,32 +220,32 @@ const Admissions = () => {
             >
               <form
                 onSubmit={handleSubmit}
-                className="bg-card p-8 rounded-3xl shadow-card border border-border space-y-6"
+                className="bg-white p-8 rounded-[2.5rem] shadow-2xl border border-[#FFD22F]/20 space-y-6"
               >
-                <h3 className="text-2xl font-heading font-bold text-foreground">
+                <h3 className="text-2xl font-heading font-bold text-[#3B2A1A]">
                   Admission Inquiry
                 </h3>
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="parentName">Parent Name</Label>
-                    <Input id="parentName" placeholder="Full Name" required />
+                    <Label htmlFor="parentName" className="text-[#3B2A1A] font-semibold">Parent Name</Label>
+                    <Input id="parentName" placeholder="Full Name" required className="rounded-xl border-[#3B2A1A]/10 focus:ring-[#FFD22F] focus:border-[#FFD22F]" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input id="phone" type="tel" placeholder="10-digit number" required />
+                    <Label htmlFor="phone" className="text-[#3B2A1A] font-semibold">Phone Number</Label>
+                    <Input id="phone" type="tel" placeholder="10-digit number" required className="rounded-xl border-[#3B2A1A]/10 focus:ring-[#FFD22F] focus:border-[#FFD22F]" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="childName">Child's Name</Label>
-                  <Input id="childName" placeholder="Child's Name" required />
+                  <Label htmlFor="childName" className="text-[#3B2A1A] font-semibold">Child's Name</Label>
+                  <Input id="childName" placeholder="Child's Name" required className="rounded-xl border-[#3B2A1A]/10 focus:ring-[#FFD22F] focus:border-[#FFD22F]" />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="program">Program of Interest</Label>
+                  <Label htmlFor="program" className="text-[#3B2A1A] font-semibold">Program of Interest</Label>
                   <Select>
-                    <SelectTrigger>
+                    <SelectTrigger className="rounded-xl border-[#3B2A1A]/10">
                       <SelectValue placeholder="Select Program" />
                     </SelectTrigger>
                     <SelectContent>
@@ -226,15 +258,21 @@ const Admissions = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="message">Message (Optional)</Label>
+                  <Label htmlFor="message" className="text-[#3B2A1A] font-semibold">Message (Optional)</Label>
                   <Textarea
                     id="message"
                     placeholder="Tell us about your child or ask a question..."
                     rows={4}
+                    className="rounded-xl border-[#3B2A1A]/10 focus:ring-[#FFD22F] focus:border-[#FFD22F]"
                   />
                 </div>
 
-                <Button variant="accent" size="lg" type="submit" className="w-full">
+                <Button 
+                  style={{ backgroundColor: "#FFD22F", color: "#3B2A1A" }} 
+                  size="lg" 
+                  type="submit" 
+                  className="w-full font-bold rounded-xl py-6 hover:shadow-lg transition-all"
+                >
                   Send Inquiry
                 </Button>
               </form>
