@@ -5,8 +5,9 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/button";
 import schoolImage from "@/assets/student.png";
 import classroomImage from "@/assets/classroom-learning.jpg";
-import awardImage from "@/assets/tamil.png"; 
-import awardImage1 from "@/assets/certificate.png"; 
+import awardImage from "@/assets/tamil.png";
+import awardImage1 from "@/assets/certificate.png";
+import founder from "@/assets/founder.png";
 import {
   Target,
   Eye,
@@ -25,22 +26,26 @@ const values = [
   {
     icon: Heart,
     title: "Respect",
-    description: "We respect each child's unique pace of development and individual personality.",
+    description:
+      "We respect each child's unique pace of development and individual personality.",
   },
   {
     icon: Star,
     title: "Independence",
-    description: "Empowering children to do things for themselves, building confidence and self-reliance.",
+    description:
+      "Empowering children to do things for themselves, building confidence and self-reliance.",
   },
   {
     icon: Lightbulb,
     title: "Passion for Learning",
-    description: "Sparking a lifelong curiosity through the proven Montessori method of discovery.",
+    description:
+      "Sparking a lifelong curiosity through the proven Montessori method of discovery.",
   },
   {
     icon: Shield,
     title: "Self-Discipline",
-    description: "Fostering an internal sense of order and responsibility within a safe, joyful environment.",
+    description:
+      "Fostering an internal sense of order and responsibility within a safe, joyful environment.",
   },
 ];
 
@@ -110,14 +115,15 @@ const About = () => {
                   holistic development is at the heart of everything we do.
                 </p>
                 <p>
-                  Our name perfectly reflects our philosophy: like a hive buzzing
-                  with energy and growth, we create a warm, safe, and stimulating
-                  environment where every child feels nurtured and excited to learn.
+                  Our name perfectly reflects our philosophy: like a hive
+                  buzzing with energy and growth, we create a warm, safe, and
+                  stimulating environment where every child feels nurtured and
+                  excited to learn.
                 </p>
               </div>
-              <Button 
-                style={{ backgroundColor: "#3B2A1A", color: "#FFFFFF" }} 
-                size="lg" 
+              <Button
+                style={{ backgroundColor: "#3B2A1A", color: "#FFFFFF" }}
+                size="lg"
                 asChild
               >
                 <Link to="/admissions">Schedule a Visit</Link>
@@ -307,8 +313,9 @@ const About = () => {
                 We Focus On
               </h2>
               <p className="text-[#3B2A1A]/70 font-body text-lg">
-                At Honey Hive, we believe every child is unique. Our child-centered
-                environment encourages growth across all dimensions.
+                At Honey Hive, we believe every child is unique. Our
+                child-centered environment encourages growth across all
+                dimensions.
               </p>
               <div className="space-y-4">
                 {[
@@ -342,48 +349,75 @@ const About = () => {
         </div>
       </section>
 
-      {/* Team Section - Brown Background with Yellow Details */}
+      {/* Team/Founder Section - Brown Background with Yellow Details */}
       <section className="py-20 bg-[#3B2A1A]">
         <div className="container mx-auto px-4">
           <SectionHeading
-            title="Meet Our Team"
-            subtitle="Dedicated professionals passionate about Montessori education"
+            title="Our Founder"
+            subtitle="The visionary behind our educational approach"
             titleClassName="text-[#FFD22F]"
           />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {teamMembers.map((member, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="bg-white/5 backdrop-blur-sm p-6 rounded-2xl text-center border border-white/10"
-              >
-                <div className="w-20 h-20 mx-auto mb-4 bg-[#FFD22F] rounded-full flex items-center justify-center">
-                  <span className="text-2xl font-heading font-bold text-[#3B2A1A]">
-                    {member.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </span>
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="bg-white/5 backdrop-blur-md rounded-3xl overflow-hidden border border-white/10 shadow-2xl"
+            >
+              <div className="flex flex-col md:flex-row items-center">
+                {/* Founder Image Area */}
+                <div className="w-full md:w-2/5 p-8">
+                  <div className="relative group">
+                    {/* Animated Glow Backdrop */}
+                    <div className="absolute -inset-1 bg-[#FFD22F] rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+
+                    {/* Container: Removed aspect-square to allow full height */}
+                    <div className="relative rounded-2xl overflow-hidden border-2 border-[#FFD22F]/30 bg-[#2A1D12]">
+                      <img
+                        src={founder}
+                        alt="Dr. Maria Montessori"
+                        /* CHANGED: 'object-contain' ensures the full image is visible.
+           'w-full' and 'h-auto' allows it to scale naturally.
+        */
+                        className="w-full h-auto object-contain block mx-auto"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-lg font-heading font-bold text-white mb-1">
-                  {member.name}
-                </h3>
-                <p className="text-[#FFD22F] font-body font-semibold text-sm mb-2">
-                  {member.role}
-                </p>
-                <p className="text-white/60 font-body text-xs">
-                  {member.experience}
-                </p>
-              </motion.div>
-            ))}
+
+                {/* Founder Text Area */}
+                <div className="w-full md:w-3/5 p-8 md:pl-0 text-center md:text-left">
+                  <div className="inline-block px-3 py-1 rounded-full bg-[#FFD22F]/10 border border-[#FFD22F]/20 text-[#FFD22F] text-xs font-bold uppercase tracking-widest mb-4">
+                    Pioneer & Visionary
+                  </div>
+                  <h3 className="text-3xl md:text-4xl font-heading font-bold text-white mb-2">
+                    Dr. Maria Montessori
+                  </h3>
+                  <p className="text-[#FFD22F] font-body font-bold text-lg mb-6">
+                    MD, Educator, and Innovator
+                  </p>
+
+                  <div className="space-y-4 text-white/80 font-body text-base leading-relaxed">
+                    <p>
+                      "The greatest sign of success for a teacher is to be able
+                      to say, 'The children are now working as if I did not
+                      exist.'"
+                    </p>
+                    <p className="text-white/60 text-sm italic">
+                      Dr. Montessori was Italy's first female physician and a
+                      three-time Nobel Peace Prize nominee. Her legacy continues
+                      through our commitment to fostering independence and
+                      natural development in every child.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
-
       {/* CTA Section - Final White/Secondary section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 text-center">
@@ -398,12 +432,12 @@ const About = () => {
               Experience the Honey Hive
             </h2>
             <p className="text-[#3B2A1A]/70 font-body text-lg">
-              Schedule a visit to see our Montessori environment in action and 
+              Schedule a visit to see our Montessori environment in action and
               discover how we nurture a lifelong passion for learning.
             </p>
-            <Button 
-              style={{ backgroundColor: "#FFD22F", color: "#3B2A1A" }} 
-              size="xl" 
+            <Button
+              style={{ backgroundColor: "#FFD22F", color: "#3B2A1A" }}
+              size="xl"
               className="font-bold rounded-full px-10"
               asChild
             >
