@@ -2,7 +2,7 @@ import { useState, ChangeEvent, FormEvent } from "react";
 
 interface StudentData {
   studentName: string;
-  studentAge: number;
+  studentAge: number | "";
   studentGender: string;
   program: string;
   parentName: string;
@@ -15,10 +15,10 @@ interface StudentData {
   consent: boolean;
 }
 
-const StudentRegistrationForm = () => {
+const Visitors = () => {
   const [formData, setFormData] = useState<StudentData>({
     studentName: "",
-    studentAge: 0,
+    studentAge: "",
     studentGender: "",
     program: "",
     parentName: "",
@@ -42,7 +42,7 @@ const StudentRegistrationForm = () => {
         type === "checkbox"
           ? (e.target as HTMLInputElement).checked
           : name === "studentAge"
-          ? Number(value)
+          ? value === "" ? "" : Number(value)
           : value,
     }));
   };
@@ -59,9 +59,10 @@ const StudentRegistrationForm = () => {
       style={{ backgroundColor: "#F4C430" }}
     >
       <div
-        className="w-full max-w-xl bg-white rounded-lg shadow-2xl overflow-hidden border-4"
+        className="w-full max-w-xl bg-white rounded-lg shadow-2xl border-4"
         style={{ borderColor: "#4A2F1B" }}
       >
+        {/* Header */}
         <div className="p-6 text-center" style={{ backgroundColor: "#4A2F1B" }}>
           <h2 className="text-2xl font-bold text-white">
             Honey Hive Montessori House
@@ -71,8 +72,8 @@ const StudentRegistrationForm = () => {
           </p>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="p-8 space-y-4">
-          {/* Student Name */}
           <input
             type="text"
             name="studentName"
@@ -83,7 +84,6 @@ const StudentRegistrationForm = () => {
             className="w-full border rounded px-3 py-2"
           />
 
-          {/* Student Age */}
           <input
             type="number"
             name="studentAge"
@@ -95,7 +95,6 @@ const StudentRegistrationForm = () => {
             className="w-full border rounded px-3 py-2"
           />
 
-          {/* Student Gender */}
           <select
             name="studentGender"
             value={formData.studentGender}
@@ -109,7 +108,6 @@ const StudentRegistrationForm = () => {
             <option value="Other">Other</option>
           </select>
 
-          {/* Program */}
           <select
             name="program"
             value={formData.program}
@@ -123,7 +121,6 @@ const StudentRegistrationForm = () => {
             <option value="Kindergarten">Kindergarten</option>
           </select>
 
-          {/* Parent Name */}
           <input
             type="text"
             name="parentName"
@@ -134,7 +131,6 @@ const StudentRegistrationForm = () => {
             className="w-full border rounded px-3 py-2"
           />
 
-          {/* Parent Email */}
           <input
             type="email"
             name="parentEmail"
@@ -145,7 +141,6 @@ const StudentRegistrationForm = () => {
             className="w-full border rounded px-3 py-2"
           />
 
-          {/* Parent Phone */}
           <input
             type="tel"
             name="parentPhone"
@@ -156,7 +151,6 @@ const StudentRegistrationForm = () => {
             className="w-full border rounded px-3 py-2"
           />
 
-          {/* Emergency Contact */}
           <input
             type="tel"
             name="emergencyContact"
@@ -167,7 +161,6 @@ const StudentRegistrationForm = () => {
             className="w-full border rounded px-3 py-2"
           />
 
-          {/* Address */}
           <textarea
             name="address"
             placeholder="Home Address"
@@ -177,7 +170,6 @@ const StudentRegistrationForm = () => {
             className="w-full border rounded px-3 py-2"
           />
 
-          {/* Preferred Start Date */}
           <input
             type="date"
             name="startDate"
@@ -186,7 +178,6 @@ const StudentRegistrationForm = () => {
             className="w-full border rounded px-3 py-2"
           />
 
-          {/* Additional Notes */}
           <textarea
             name="additionalNotes"
             placeholder="Medical info, allergies, special needs, etc."
@@ -196,7 +187,6 @@ const StudentRegistrationForm = () => {
             className="w-full border rounded px-3 py-2"
           />
 
-          {/* Consent */}
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
@@ -208,7 +198,6 @@ const StudentRegistrationForm = () => {
             I confirm the above information is accurate.
           </label>
 
-          {/* Submit */}
           <button
             type="submit"
             className="w-full text-white font-bold py-2 rounded"
@@ -222,4 +211,4 @@ const StudentRegistrationForm = () => {
   );
 };
 
-export default StudentRegistrationForm;
+export default Visitors;

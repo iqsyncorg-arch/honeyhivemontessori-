@@ -10,7 +10,8 @@ import Programs from "./pages/Programs";
 import Gallery from "./pages/Gallery";
 import Admissions from "./pages/Admissions";
 import Contact from "./pages/Contact";
-import Visitors from "./pages/visitors";
+import Visitors from "./pages/Visitors";
+
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
