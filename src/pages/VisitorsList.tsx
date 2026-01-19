@@ -1,49 +1,105 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { supabase } from "../supabaseClient";
+import {
+  LogOut,
+  Search,
+  RefreshCw,
+  Download,
+  User,
+  FileSpreadsheet,
+  Filter,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Phone,
+  Calendar,
+  Mail,
+  MapPin,
+  Baby,
+  Users,
+  Info,
+  Trash2,
+  ChevronRight as ArrowRight,
+} from "lucide-react";
 
+// --- FIX: IMPORT THE LOGO DIRECTLY ---
+import logoImg from "../assets/logo.png";
+import honeyLogo from "../assets/honey.png";
+
+// --- Types ---
 type VisitorRow = {
   id: number;
   created_at: string;
-  parent_name: string;
+  date_of_enquiry: string;
   child_name: string;
-  mobilenumber: number;
+  dob: string;
+  age_years: string;
+  age_months: string;
+  gender: string;
+  previous_school: string;
+  languages_spoken: string;
+  admission_sought_for: string;
+  parent_name: string;
+  relationship: string;
+  phone_number: string;
   email_id: string;
+  address: string;
+  how_did_you_hear: string;
+  interaction_done_by: string | null;
+  remarks: string | null;
 };
+
+// --- Columns for CSV ---
+const CSV_HEADERS: (keyof VisitorRow)[] = [
+  "date_of_enquiry",
+  "child_name",
+  "dob",
+  "age_years",
+  "age_months",
+  "gender",
+  "admission_sought_for",
+  "parent_name",
+  "relationship",
+  "phone_number",
+  "email_id",
+  "previous_school",
+  "languages_spoken",
+  "how_did_you_hear",
+  "interaction_done_by",
+  "remarks",
+  "address",
+];
 
 const VisitorsList = () => {
   const [data, setData] = useState<VisitorRow[]>([]);
-  const [filteredData, setFilteredData] = useState<VisitorRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
-  // Login State
+  const [selectedVisitor, setSelectedVisitor] = useState<VisitorRow | null>(
+    null
+  );
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({ gender: "all", admission: "all" });
+
   const [phone, setPhone] = useState("");
   const [pin, setPin] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
   useEffect(() => {
-    const authStatus = localStorage.getItem("honeyhive_auth");
-    if (authStatus === "true") {
+    if (localStorage.getItem("honeyhive_auth") === "true") {
       setIsLoggedIn(true);
       fetchVisitors();
     }
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (phone === "7868000645" && pin === "1234") {
-      localStorage.setItem("honeyhive_auth", "true");
-      setIsLoggedIn(true);
-      fetchVisitors();
-    } else {
-      alert("Invalid Credentials");
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("honeyhive_auth");
-    setIsLoggedIn(false);
-  };
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchTerm.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
 
   const fetchVisitors = async () => {
     setLoading(true);
@@ -51,47 +107,125 @@ const VisitorsList = () => {
       .from("honeyhive")
       .select("*")
       .order("created_at", { ascending: false });
-
+    if (!error) setData(data || []);
     setLoading(false);
-    if (error) {
-      alert("Error: " + error.message);
-      return;
-    }
-    setData(data || []);
-    setFilteredData(data || []);
   };
 
-  // Filter Logic
-  useEffect(() => {
-    const results = data.filter(visitor =>
-      visitor.parent_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      visitor.child_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      visitor.mobilenumber.toString().includes(searchTerm)
+  const deleteEntry = async (id: number, name: string) => {
+    if (
+      window.confirm(`Are you sure you want to delete the enquiry for ${name}?`)
+    ) {
+      const { error } = await supabase.from("honeyhive").delete().eq("id", id);
+      if (error) {
+        alert("Error deleting entry");
+      } else {
+        setData(data.filter((item) => item.id !== id));
+        if (selectedVisitor?.id === id) setSelectedVisitor(null);
+      }
+    }
+  };
+
+  // CSV Export Logic
+  const handleExportCSV = () => {
+    if (filteredData.length === 0) return alert("No records to export");
+
+    const headers = CSV_HEADERS.map((h) =>
+      h.replace(/_/g, " ").toUpperCase()
+    ).join(",");
+    const rows = filteredData.map((v) =>
+      CSV_HEADERS.map(
+        (header) => `"${String(v[header] || "").replace(/"/g, '""')}"`
+      ).join(",")
     );
-    setFilteredData(results);
-  }, [searchTerm, data]);
+
+    const csvContent = [headers, ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `HoneyHive_Entries_${new Date().toLocaleDateString()}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const filteredData = useMemo(() => {
+    return data.filter((v) => {
+      const q = debouncedSearch.toLowerCase();
+      const matchesSearch =
+        !q ||
+        [v.child_name, v.parent_name, v.phone_number].some((f) =>
+          f?.toLowerCase().includes(q)
+        );
+      const matchesGender =
+        filters.gender === "all" || v.gender === filters.gender;
+      const matchesAdmission =
+        filters.admission === "all" ||
+        v.admission_sought_for === filters.admission;
+      return matchesSearch && matchesGender && matchesAdmission;
+    });
+  }, [data, debouncedSearch, filters]);
+
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const currentItems = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredData.slice(start, start + itemsPerPage);
+  }, [filteredData, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch, filters]);
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-yellow-400 p-4">
-        <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border-b-8 border-[#4A2F1B]">
-          <div className="text-center mb-8">
-             <h1 className="text-3xl font-black text-[#4A2F1B]">HONEY HIVE</h1>
-             <p className="text-sm font-bold text-yellow-600">MONTESSORI HOUSE</p>
+      <div className="min-h-screen bg-[#FDFCF0] flex items-center justify-center p-6">
+        <div className="bg-white p-8 rounded-[3rem] shadow-2xl w-full max-w-md border border-yellow-100 flex flex-col items-center text-center">
+          {/* LOGO IN LOGIN */}
+          <div className="w-74 h-74 mb-6 flex items-center justify-center">
+            <img
+              src={honeyLogo}
+              alt="Logo"
+              className="max-w-full max-h-full object-contain"
+              onError={(e) => {
+                e.currentTarget.src =
+                  "https://ui-avatars.com/api/?name=Honey+Hive&background=fbbf24";
+              }}
+            />
           </div>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <input 
-              type="text" placeholder="Mobile Number" 
-              className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-yellow-500 outline-none"
-              value={phone} onChange={(e) => setPhone(e.target.value)}
+          <h1 className="text-2xl font-black text-slate-800 mb-8 uppercase tracking-widest">
+            Admin Login
+          </h1>
+          <form
+            className="w-full space-y-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (phone === "7868000645" && pin === "1234") {
+                setIsLoggedIn(true);
+                localStorage.setItem("honeyhive_auth", "true");
+                fetchVisitors();
+              } else alert("Invalid credentials");
+            }}
+          >
+            <input
+              type="text"
+              placeholder="Mobile"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-yellow-400"
             />
-            <input 
-              type="password" placeholder="4-Digit PIN" 
-              className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-yellow-500 outline-none"
-              value={pin} onChange={(e) => setPin(e.target.value)}
+            <input
+              type="password"
+              placeholder="PIN"
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+              className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-yellow-400"
             />
-            <button className="w-full bg-[#4A2F1B] text-white py-3 rounded-lg font-bold hover:bg-black transition">
-              Login to Dashboard
+            <button className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-lg active:scale-95 transition">
+              Sign In
             </button>
           </form>
         </div>
@@ -100,82 +234,390 @@ const VisitorsList = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <nav className="bg-[#4A2F1B] text-white p-4 shadow-md flex justify-between items-center px-6">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight">HONEY HIVE</h1>
-          <p className="text-[10px] uppercase tracking-widest text-yellow-400">Montessori House</p>
+    <div className="min-h-screen bg-[#F8F9FC] text-slate-900">
+      {/* Sidebar - Desktop Only */}
+      <aside className="hidden lg:flex w-72 bg-white border-r border-slate-100 fixed h-full flex-col p-8">
+        <div className="flex items-center gap-3 mb-12">
+          {/* LOGO IN SIDEBAR */}
+          <div className="w-50 h-50 flex items-center justify-center">
+            <img
+              src={honeyLogo}
+              alt="Logo"
+              className="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span className="font-black text-xl text-slate-800">HONEY HIVE</span>
         </div>
-        <button onClick={handleLogout} className="bg-yellow-500 hover:bg-yellow-400 text-[#4A2F1B] px-4 py-1 rounded font-bold text-sm transition">
-          Logout
+        <nav className="flex-1 space-y-2">
+          <button className="w-full flex items-center gap-3 px-5 py-4 bg-yellow-50 text-yellow-700 rounded-2xl font-bold text-sm">
+            <User size={18} /> Enquiries
+          </button>
+          <button
+            onClick={handleExportCSV}
+            className="w-full flex items-center gap-3 px-5 py-4 text-slate-500 hover:bg-slate-50 rounded-2xl font-bold text-sm"
+          >
+            <FileSpreadsheet size={18} /> Export CSV
+          </button>
+        </nav>
+        <button
+          onClick={() => {
+            localStorage.clear();
+            setIsLoggedIn(false);
+          }}
+          className="flex items-center gap-3 px-5 py-4 text-red-500 font-bold text-sm hover:bg-red-50 rounded-2xl transition"
+        >
+          <LogOut size={18} /> Logout
         </button>
-      </nav>
+      </aside>
 
-      <main className="p-4 md:p-8 max-w-6xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-          
-          {/* Toolbar */}
-          <div className="p-4 bg-white border-b flex flex-col md:flex-row gap-4 justify-between items-center">
-            <div className="relative w-full md:w-72">
-              <input 
-                type="text" 
-                placeholder="Search by name or phone..." 
-                className="w-full pl-4 pr-4 py-2 border rounded-full bg-gray-50 focus:ring-2 focus:ring-yellow-400 outline-none text-sm"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <button 
-              onClick={fetchVisitors} 
-              className="text-sm font-semibold text-[#4A2F1B] hover:underline"
+      <main className="lg:ml-72 p-4 lg:p-10 max-w-6xl mx-auto pb-24">
+        <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tight">
+            Records ({filteredData.length})
+          </h1>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={fetchVisitors}
+              className="flex items-center justify-center gap-2 bg-white px-6 py-3 rounded-2xl font-bold shadow-sm hover:bg-slate-50"
             >
-              {loading ? "Refreshing..." : "↻ Refresh List"}
+              <RefreshCw size={18} className={loading ? "animate-spin" : ""} />{" "}
+              Refresh
             </button>
           </div>
+        </header>
 
-          {/* Table Container */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead className="bg-gray-50 text-[#4A2F1B] uppercase text-xs font-bold">
-                <tr>
-                  <th className="p-4 border-b">Parent Name</th>
-                  <th className="p-4 border-b">Child Name</th>
-                  <th className="p-4 border-b">Contact</th>
-                  <th className="p-4 border-b">Date</th>
-                </tr>
-              </thead>
-              <tbody className="text-sm">
-                {filteredData.length > 0 ? (
-                  filteredData.map((row) => (
-                    <tr key={row.id} className="hover:bg-yellow-50 transition border-b">
-                      <td className="p-4 font-medium">{row.parent_name}</td>
-                      <td className="p-4 text-gray-600">{row.child_name}</td>
-                      <td className="p-4">
-                        <div className="flex flex-col">
-                          <span>{row.mobilenumber}</span>
-                          <span className="text-xs text-gray-400">{row.email_id}</span>
-                        </div>
-                      </td>
-                      <td className="p-4 text-gray-500">
-                        {new Date(row.created_at).toLocaleDateString()}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={4} className="p-10 text-center text-gray-400">
-                      {loading ? "Loading data..." : "No matching records found."}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+        {/* Search & Filter */}
+        <div className="flex gap-3 mb-6">
+          <div className="relative flex-1">
+            <Search
+              className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
+              size={18}
+            />
+            <input
+              type="text"
+              placeholder="Search child, parent or phone..."
+              className="w-full pl-14 pr-6 py-4 bg-white border-none rounded-2xl shadow-sm focus:ring-2 focus:ring-yellow-400 transition"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <button
+            onClick={() => setShowFilters(true)}
+            className="p-4 bg-white rounded-2xl shadow-sm text-slate-500 hover:text-yellow-600"
+          >
+            <Filter size={20} />
+          </button>
+        </div>
+
+        {/* LIST VIEW */}
+        <div className="space-y-3">
+          {currentItems.map((item) => (
+            <div
+              key={item.id}
+              className="bg-white p-4 lg:p-6 rounded-[1.5rem] border border-slate-100 flex items-center justify-between shadow-sm hover:shadow-md transition-all group"
+            >
+              <div
+                className="flex items-center gap-4 lg:gap-6 flex-1 cursor-pointer"
+                onClick={() => setSelectedVisitor(item)}
+              >
+                <div className="w-12 h-12 lg:w-14 lg:h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-2xl group-hover:bg-yellow-50 transition-colors">
+                  {item.gender?.toLowerCase() === "male" ? "👦" : "👧"}
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-black text-slate-800 text-lg truncate uppercase">
+                    {item.child_name}
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm font-bold text-slate-400">
+                    <span className="text-yellow-600 px-2 py-0.5 bg-yellow-50 rounded-md text-[10px] uppercase font-black">
+                      {item.admission_sought_for}
+                    </span>
+                    <span className="flex items-center gap-1 uppercase tracking-tighter">
+                      <User size={12} /> {item.parent_name}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Phone size={12} /> {item.phone_number}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 ml-4">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteEntry(item.id, item.child_name);
+                  }}
+                  className="p-3 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition"
+                >
+                  <Trash2 size={20} />
+                </button>
+                <button
+                  onClick={() => setSelectedVisitor(item)}
+                  className="p-3 text-slate-300 hover:text-yellow-600 rounded-xl transition"
+                >
+                  <ArrowRight size={20} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* PAGINATION CONTROLS */}
+        {totalPages > 1 && (
+          <div className="mt-10 flex items-center justify-center gap-4">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((p) => p - 1)}
+              className="p-3 bg-white border border-slate-200 rounded-xl disabled:opacity-30"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <div className="flex items-center gap-2 overflow-x-auto max-w-[200px] lg:max-w-none no-scrollbar">
+              {[...Array(totalPages)].map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`flex-shrink-0 w-10 h-10 rounded-xl font-black text-xs transition ${
+                    currentPage === i + 1
+                      ? "bg-slate-900 text-white shadow-lg"
+                      : "bg-white text-slate-400 hover:bg-slate-50"
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((p) => p + 1)}
+              className="p-3 bg-white border border-slate-200 rounded-xl disabled:opacity-30"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        )}
+      </main>
+
+      {/* MOBILE EXPORT FAB (Floating Action Button) */}
+      <div className="fixed bottom-6 right-6 flex flex-col gap-3 lg:hidden z-50">
+        <button
+          onClick={handleExportCSV}
+          className="w-14 h-14 bg-yellow-400 text-slate-900 rounded-full flex items-center justify-center shadow-2xl active:scale-90 transition border-4 border-white"
+        >
+          <FileSpreadsheet size={24} />
+        </button>
+      </div>
+
+      {/* DETAIL DRAWER */}
+      {selectedVisitor && (
+        <div className="fixed inset-0 z-[100] flex justify-end">
+          <div
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            onClick={() => setSelectedVisitor(null)}
+          />
+          <div className="relative w-full max-w-xl bg-white h-full shadow-2xl animate-in slide-in-from-right overflow-y-auto">
+            <div className="sticky top-0 bg-white/90 backdrop-blur-md p-6 border-b flex items-center justify-between z-10">
+              <h2 className="text-xl font-black uppercase tracking-tight">
+                Profile
+              </h2>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() =>
+                    deleteEntry(selectedVisitor.id, selectedVisitor.child_name)
+                  }
+                  className="p-3 text-red-500 hover:bg-red-50 rounded-2xl transition"
+                >
+                  <Trash2 size={20} />
+                </button>
+                <button
+                  onClick={() => setSelectedVisitor(null)}
+                  className="p-3 bg-slate-100 rounded-2xl transition"
+                >
+                  <X />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-8 space-y-10">
+              <div className="flex items-center gap-6 bg-yellow-50 p-6 rounded-[2.5rem]">
+                <div className="text-5xl">
+                  {selectedVisitor.gender?.toLowerCase() === "male"
+                    ? "👦"
+                    : "👧"}
+                </div>
+                <div>
+                  <h1 className="text-2xl font-black text-slate-900 uppercase">
+                    {selectedVisitor.child_name}
+                  </h1>
+                  <p className="font-bold text-yellow-700 text-xs">
+                    ADMISSION SOUGHT: {selectedVisitor.admission_sought_for}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <DataGroup icon={<Baby size={18} />} title="Child Info">
+                  <Item label="DOB" val={selectedVisitor.dob} />
+                  <Item
+                    label="Age"
+                    val={`${selectedVisitor.age_years}Y ${selectedVisitor.age_months}M`}
+                  />
+                  <Item
+                    label="Prev School"
+                    val={selectedVisitor.previous_school}
+                  />
+                  <Item
+                    label="Languages"
+                    val={selectedVisitor.languages_spoken}
+                  />
+                </DataGroup>
+
+                <DataGroup icon={<Users size={18} />} title="Parent Info">
+                  <Item
+                    label="Parent"
+                    val={`${selectedVisitor.parent_name} (${selectedVisitor.relationship})`}
+                  />
+                  <Item
+                    label="Phone"
+                    val={selectedVisitor.phone_number}
+                    isLink={`tel:${selectedVisitor.phone_number}`}
+                  />
+                  <Item
+                    label="Email"
+                    val={selectedVisitor.email_id}
+                    isLink={`mailto:${selectedVisitor.email_id}`}
+                  />
+                  <Item label="Address" val={selectedVisitor.address} />
+                </DataGroup>
+              </div>
+
+              <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                <h4 className="flex items-center gap-2 text-xs font-black uppercase text-slate-400 mb-4">
+                  <Info size={16} /> Remarks
+                </h4>
+                <p className="text-sm font-bold text-slate-700 italic leading-relaxed">
+                  {selectedVisitor.remarks
+                    ? `"${selectedVisitor.remarks}"`
+                    : "No remarks provided."}
+                </p>
+                <div className="mt-6 grid grid-cols-2 gap-4 border-t border-slate-200 pt-4">
+                  <Item
+                    label="Enquiry Date"
+                    val={selectedVisitor.date_of_enquiry}
+                  />
+                  <Item label="Source" val={selectedVisitor.how_did_you_hear} />
+                </div>
+              </div>
+
+              <a
+                href={`tel:${selectedVisitor.phone_number}`}
+                className="w-full flex items-center justify-center gap-3 p-5 bg-slate-900 text-white rounded-3xl font-black uppercase tracking-widest shadow-xl active:scale-95 transition"
+              >
+                <Phone size={20} /> Call Parent
+              </a>
+            </div>
           </div>
         </div>
-      </main>
+      )}
+
+      {/* FILTER PANEL */}
+      {showFilters && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            onClick={() => setShowFilters(false)}
+          />
+          <div className="relative bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl animate-in zoom-in-95">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-black uppercase">Filters</h2>
+              <button
+                onClick={() => {
+                  setFilters({ gender: "all", admission: "all" });
+                  setShowFilters(false);
+                }}
+                className="text-[10px] font-black text-red-500 uppercase underline"
+              >
+                Clear
+              </button>
+            </div>
+            <div className="space-y-6 mb-10">
+              <div>
+                <label className="text-[10px] font-black text-slate-400 uppercase block mb-2">
+                  Grade
+                </label>
+                <select
+                  className="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold"
+                  value={filters.admission}
+                  onChange={(e) =>
+                    setFilters({ ...filters, admission: e.target.value })
+                  }
+                >
+                  <option value="all">All Grades</option>
+                  <option value="Pre-Kg">Pre-Kg</option>
+                  <option value="LKG">LKG</option>
+                  <option value="UKG">UKG</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] font-black text-slate-400 uppercase block mb-2">
+                  Gender
+                </label>
+                <div className="flex gap-2">
+                  {["all", "Male", "Female"].map((g) => (
+                    <button
+                      key={g}
+                      onClick={() => setFilters({ ...filters, gender: g })}
+                      className={`flex-1 py-3 rounded-xl text-[10px] font-black border transition ${
+                        filters.gender === g
+                          ? "bg-yellow-400 border-yellow-400 text-slate-900"
+                          : "bg-white text-slate-500 border-slate-200"
+                      }`}
+                    >
+                      {g.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowFilters(false)}
+              className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase shadow-lg"
+            >
+              Show Results
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
+// --- Small Helpers ---
+const DataGroup = ({ icon, title, children }: any) => (
+  <div className="space-y-5">
+    <h4 className="flex items-center gap-2 text-xs font-black uppercase text-slate-400 border-b border-slate-100 pb-2">
+      {icon} {title}
+    </h4>
+    {children}
+  </div>
+);
+
+const Item = ({ label, val, isLink }: any) => (
+  <div className="flex flex-col">
+    <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">
+      {label}
+    </span>
+    {isLink ? (
+      <a
+        href={isLink}
+        className="text-sm font-bold text-blue-600 underline truncate break-all"
+      >
+        {val || "-"}
+      </a>
+    ) : (
+      <span className="text-sm font-bold text-slate-700">{val || "-"}</span>
+    )}
+  </div>
+);
 
 export default VisitorsList;

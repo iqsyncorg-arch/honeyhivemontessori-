@@ -21,7 +21,7 @@ import {
   MonitorOff,
   ShieldCheck,
   School,
-  Phone, // Added for the call icon
+  Phone, 
 } from "lucide-react";
 
 // Brand Colors Configuration
@@ -117,6 +117,8 @@ const reasons = [
 ];
 
 const Index = () => {
+  const phoneNumber = "+919952900051";
+
   return (
     <Layout>
       {/* Hero Section */}
@@ -537,7 +539,7 @@ const Index = () => {
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-4">
         {/* WhatsApp Button */}
         <motion.a
-          href="https://wa.me/yourphonenumber" // Replace with actual number
+          href={`https://wa.me/${phoneNumber.replace('+', '')}`}
           target="_blank"
           rel="noopener noreferrer"
           whileHover={{ scale: 1.1 }}
@@ -558,12 +560,12 @@ const Index = () => {
 
         {/* Call Button */}
         <motion.a
-          href="tel:+1234567890" // Replace with actual number
-          whileHover={{ scale: 1.1 }}
+          href={`tel:${phoneNumber}`}
+          whileHover={{ scale: 1.1, backgroundColor: COLORS.secondaryBrown }}
           whileTap={{ scale: 0.9 }}
-          className="bg-[#7F3FBF] text-white p-4 rounded-full shadow-lg flex items-center justify-center transition-colors hover:bg-[#6a35a0]"
+          className="bg-[#FFD22F] text-[#3B2A1A] p-4 rounded-full shadow-lg flex items-center justify-center transition-colors hover:text-white"
         >
-          <Phone className="w-7 h-7 fill-white" />
+          <Phone className="w-7 h-7 fill-current" />
         </motion.a>
       </div>
     </Layout>
