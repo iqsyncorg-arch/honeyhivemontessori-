@@ -126,7 +126,7 @@ const About = () => {
                 size="lg"
                 asChild
               >
-                <Link to="/admissions">Schedule a Visit</Link>
+                <Link to="/admissions">Plan Your Visit</Link>
               </Button>
             </motion.div>
 
@@ -432,7 +432,7 @@ const About = () => {
               Experience the Honey Hive
             </h2>
             <p className="text-[#3B2A1A]/70 font-body text-lg">
-              Schedule a visit to see our Montessori environment in action and
+              Plan Your Visit to see our Montessori environment in action and
               discover how we nurture a lifelong passion for learning.
             </p>
             <Button
@@ -441,7 +441,7 @@ const About = () => {
               className="font-bold rounded-full px-10"
               asChild
             >
-              <Link to="/admissions">Book A Tour</Link>
+              <Link to="/admissions">Plan Your Visit</Link>
             </Button>
           </motion.div>
         </div>

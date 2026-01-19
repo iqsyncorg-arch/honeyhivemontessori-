@@ -20,20 +20,23 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-[#FFD22F]/20">
       <div className="container mx-auto px-4">
-        <nav className="flex items-center justify-between h-20">
+        {/* Increased height from h-20 to h-20 md:h-24 to accommodate larger logo */}
+        <nav className="flex items-center justify-between h-20 md:h-24">
+          
           {/* Logo Section */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="flex items-center gap-3">
               <img
                 src="/src/assets/logo.png"
                 alt="Honey Hive Montessori House Logo"
-                className="h-14 w-14 object-contain transition-transform group-hover:scale-105"
+                /* Increased size from h-14 w-14 to h-16 w-16 */
+                className="h-16 w-16 md:h-20 md:w-20 object-contain transition-transform duration-300 group-hover:scale-110"
               />
               <div className="flex flex-col justify-center">
-                <span className="text-xl md:text-2xl font-heading font-bold leading-tight text-[#FFD22F]">
+                <span className="text-xl md:text-2xl lg:text-3xl font-heading font-bold leading-tight text-[#FFD22F]">
                   Honey Hive
                 </span>
-                <span className="text-sm md:text-base font-heading font-semibold leading-tight text-[#3B2A1A]">
+                <span className="text-xs md:text-sm lg:text-base font-heading font-semibold tracking-wide leading-tight text-[#3B2A1A]">
                    Montessori House
                 </span>
               </div>
@@ -61,11 +64,11 @@ const Header = () => {
           <div className="hidden lg:block">
             <Button 
               style={{ backgroundColor: "#3B2A1A", color: "#FFFFFF" }}
-              className="font-bold rounded-full hover:opacity-90 transition-all border-none"
+              className="font-bold rounded-full hover:opacity-90 transition-all border-none px-6"
               size="lg" 
               asChild
             >
-              <Link to="/admissions">Book a Tour</Link>
+              <Link to="/admissions">Plan Your Visit</Link>
             </Button>
           </div>
 
@@ -91,7 +94,7 @@ const Header = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-white border-t border-[#FFD22F]/20 shadow-xl"
+            className="lg:hidden bg-white border-t border-[#FFD22F]/20 shadow-xl overflow-hidden"
           >
             <div className="container mx-auto px-4 py-6 flex flex-col gap-2">
               {navLinks.map((link) => (
@@ -111,8 +114,8 @@ const Header = () => {
               <div className="pt-4 border-t border-[#FFD22F]/10 mt-2">
                 <Button 
                   style={{ backgroundColor: "#3B2A1A", color: "#FFFFFF" }}
-                  size="xl" 
-                  className="w-full font-bold rounded-2xl py-7" 
+                  size="lg" 
+                  className="w-full font-bold rounded-2xl py-7 text-lg" 
                   asChild
                 >
                   <Link to="/admissions" onClick={() => setIsMenuOpen(false)}>

@@ -13,7 +13,7 @@ const Footer = () => {
                 Honey Hive<span className="text-white"> Montessori</span>
               </span>
             </Link>
-            <p className="text-white/70 font-body text-sm leading-relaxed italic border-l-2 border-[#FFD22F] pl-4">
+            <p className="text-white/70 font-body text-base leading-relaxed italic border-l-2 border-[#FFD22F] pl-4">
               “The greatest gifts we can give our children are the roots of responsibility and the wings of independence.”
             </p>
             <div className="flex gap-4 pt-2">
@@ -49,8 +49,8 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-heading font-bold mb-6 text-[#FFD22F]">Explore</h3>
-            <ul className="space-y-3 font-body">
+            <h3 className="text-xl font-heading font-bold mb-6 text-[#FFD22F]">Explore</h3>
+            <ul className="space-y-4 font-body">
               {[
                 { name: "About Our House", path: "/about" },
                 { name: "Learning Programs", path: "/programs" },
@@ -61,9 +61,9 @@ const Footer = () => {
                 <li key={link.path}>
                   <Link
                     to={link.path}
-                    className="text-white/60 hover:text-[#FFD22F] transition-colors text-sm flex items-center gap-2 group"
+                    className="text-white/80 hover:text-[#FFD22F] transition-colors text-base flex items-center gap-2 group"
                   >
-                    <span className="w-1 h-1 bg-[#FFD22F] rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <span className="w-1.5 h-1.5 bg-[#FFD22F] rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                     {link.name}
                   </Link>
                 </li>
@@ -73,8 +73,8 @@ const Footer = () => {
 
           {/* Programs */}
           <div>
-            <h3 className="text-lg font-heading font-bold mb-6 text-[#FFD22F]">Our Programs</h3>
-            <ul className="space-y-3 font-body">
+            <h3 className="text-xl font-heading font-bold mb-6 text-[#FFD22F]">Our Programs</h3>
+            <ul className="space-y-4 font-body">
               {[
                 "Grub (Playgroup)",
                 "Brood (Pre-KG)",
@@ -85,9 +85,9 @@ const Footer = () => {
                 <li key={program}>
                   <Link
                     to="/programs"
-                    className="text-white/60 hover:text-[#FFD22F] transition-colors text-sm flex items-center gap-2 group"
+                    className="text-white/80 hover:text-[#FFD22F] transition-colors text-base font-medium flex items-center gap-2 group"
                   >
-                    <span className="w-1 h-1 bg-[#FFD22F] rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <span className="w-1.5 h-1.5 bg-[#FFD22F] rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                     {program}
                   </Link>
                 </li>
@@ -97,33 +97,33 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-lg font-heading font-bold mb-6 text-[#FFD22F]">Get in Touch</h3>
-            <ul className="space-y-4 font-body">
+            <h3 className="text-xl font-heading font-bold mb-6 text-[#FFD22F]">Get in Touch</h3>
+            <ul className="space-y-5 font-body">
               <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-[#FFD22F] shrink-0 mt-0.5" />
-                <span className="text-white/70 text-sm leading-relaxed">
+                <MapPin className="w-6 h-6 text-[#FFD22F] shrink-0 mt-0.5" />
+                <span className="text-white/80 text-base leading-relaxed">
                   Raama associates, 1 A, Vinayaganagar, MCN Nagar Ext, Thoraipakkam, Chennai 600097
                 </span>
               </li>
               <li className="flex flex-col gap-3">
                 <div className="flex items-center gap-3 group">
                   <Phone className="w-5 h-5 text-[#FFD22F] shrink-0" />
-                  <a href="tel:+919952900051" className="text-white/70 hover:text-[#FFD22F] transition-colors text-sm font-bold">
+                  <a href="tel:+919952900051" className="text-white/80 hover:text-[#FFD22F] transition-colors text-base font-bold">
                     +91 99529 00051
                   </a>
                 </div>
                 <div className="pl-8 flex flex-col gap-1 border-l border-[#FFD22F]/20 ml-2.5">
-                    <a href="tel:+919790730051" className="text-white/70 hover:text-[#FFD22F] transition-colors text-sm">
+                    <a href="tel:+919790730051" className="text-white/80 hover:text-[#FFD22F] transition-colors text-base">
                         +91 97907 30051
                     </a>
-                    <span className="text-white/30 text-xs">044 - 48502661</span>
+                    <span className="text-white/80 text-sm">044 - 48502661</span>
                 </div>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-[#FFD22F] shrink-0" />
                 <a
                   href="mailto:honeyhivechennai@gmail.com"
-                  className="text-white/70 hover:text-[#FFD22F] transition-colors text-sm"
+                  className="text-white/80 hover:text-[#FFD22F] transition-colors text-base"
                 >
                   honeyhivechennai@gmail.com
                 </a>
@@ -134,10 +134,10 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-white/40 text-xs font-body">
+          <p className="text-white/40 text-sm font-body">
             © {new Date().getFullYear()} Honey Hive Montessori House. All rights reserved.
           </p>
-          <div className="flex gap-6 text-xs font-body">
+          <div className="flex gap-6 text-sm font-body">
             <Link to="/privacy" className="text-white/40 hover:text-[#FFD22F] transition-colors">
               Privacy Policy
             </Link>

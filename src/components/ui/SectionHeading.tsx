@@ -32,14 +32,15 @@ const SectionHeading = ({
     >
       <h2
         className={cn(
-          "text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-foreground",
+          "text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-[#3B2A1A]",
           titleClassName
         )}
       >
         {title}
       </h2>
+
       {subtitle && (
-        <p className="mt-4 text-muted-foreground font-body text-lg max-w-2xl mx-auto">
+        <p className="mt-4 text-[#3B2A1A]/80 font-body text-lg max-w-2xl mx-auto">
           {subtitle}
         </p>
       )}

@@ -11,6 +11,8 @@ import Gallery from "./pages/Gallery";
 import Admissions from "./pages/Admissions";
 import Contact from "./pages/Contact";
 import Visitors from "./pages/Visitors";
+import VisitorsList from "./pages/VisitorsList";
+
 
 import NotFound from "./pages/NotFound";
 
@@ -31,6 +33,8 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/visitors" element={<Visitors />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/visitors-list" element={<VisitorsList />} />
+
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
