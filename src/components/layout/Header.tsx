@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+// ✅ FIX: Import the logo so it works in production builds (Vite/React bundlers)
+import logo from "@/assets/logo.png";
+
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
@@ -27,7 +30,8 @@ const Header = () => {
           <Link to="/" className="flex items-center gap-3 group">
             <div className="flex items-center gap-3">
               <img
-                src="/src/assets/logo.png"
+                // ✅ FIX: Use imported logo instead of /src/... path
+                src={logo}
                 alt="Honey Hive Montessori House Logo"
                 /* Increased size from h-14 w-14 to h-16 w-16 */
                 className="h-16 w-16 md:h-20 md:w-20 object-contain transition-transform duration-300 group-hover:scale-110"
