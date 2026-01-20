@@ -3,8 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-// ✅ FIX: Import the logo so it works in production builds (Vite/React bundlers)
 import logo from "@/assets/logo.png";
 
 const navLinks = [

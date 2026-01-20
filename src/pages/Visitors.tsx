@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Lottie from "lottie-react";
 import { supabase } from "../supabaseClient";
 import logo from "../assets/logo.png";
-import beeAnimation from "../assets/BEE-lieve.json"; // ✅ Ensure the path to your JSON is correct
+import beeAnimation from "../assets/BEE-lieve.json";
 import honeyLogo from "../assets/honey.png";
 import treeImg from "../assets/tree.png";
 
@@ -22,8 +22,6 @@ type FormData = {
   email_id: string;
   address: string;
   how_did_you_hear: string;
-  interaction_done_by: string;
-  remarks: string;
 };
 
 const admissionOptions = [
@@ -88,8 +86,6 @@ const Visitors = () => {
     email_id: "",
     address: "",
     how_did_you_hear: "",
-    interaction_done_by: "",
-    remarks: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -186,8 +182,6 @@ const Visitors = () => {
       email_id: "",
       address: "",
       how_did_you_hear: "",
-      interaction_done_by: "",
-      remarks: "",
     });
   };
 
@@ -198,21 +192,26 @@ const Visitors = () => {
     "md:col-span-2 text-lg font-bold text-[#4A2F1B] border-b-2 border-yellow-200 pb-2 mt-6 mb-2";
   if (isSplashActive) {
     return (
-      <div className="min-h-screen bg-yellow-400 flex flex-col items-center justify-center p-10 relative overflow-hidden">
-        {/* Tree Image - Left Corner */}
+      <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-yellow-400 p-6">
+        {/* Tree Image - Scaled for mobile, pushed to corner */}
         <img
           src={treeImg}
           alt="Tree"
-          className="absolute bottom-0 left-0 w-160 sm:w-208 md:w-256 object-contain"
+          className="absolute bottom-0 left-0 w-1/2 max-w-[300px] object-contain opacity-80 sm:w-1/3 sm:opacity-100 md:w-1/4"
         />
 
-        <div className="max-w-md w-full flex flex-col items-center z-10">
-          <Lottie animationData={beeAnimation} loop={true} />
+        {/* Main Content Container */}
+        <div className="z-10 flex w-full max-w-sm flex-col items-center text-center">
+          {/* Animation: Size responds to screen width */}
+          <div className="w-48 sm:w-64 md:w-80">
+            <Lottie animationData={beeAnimation} loop={true} />
+          </div>
 
+          {/* Logo: Using percentages or standard scale for better fit */}
           <img
             src={honeyLogo}
             alt="Honey Hive Montessori House"
-            className="w-105 mt-4"
+            className="mt-6 w-3/4 max-w-[280px] sm:w-full"
           />
         </div>
       </div>
@@ -515,32 +514,6 @@ const Visitors = () => {
                   </label>
                 ))}
               </div>
-            </div>
-
-            <div className={sectionHeader + " !border-red-100 mt-10"}>
-              Office Use Only
-            </div>
-
-            <div>
-              <label className={labelClass}>Interaction Done By</label>
-              <input
-                type="text"
-                name="interaction_done_by"
-                value={formData.interaction_done_by}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-
-            <div>
-              <label className={labelClass}>Remarks</label>
-              <input
-                type="text"
-                name="remarks"
-                value={formData.remarks}
-                onChange={handleChange}
-                className={inputClass}
-              />
             </div>
 
             <button
