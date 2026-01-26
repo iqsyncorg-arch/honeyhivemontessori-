@@ -190,34 +190,47 @@ const Visitors = () => {
   const labelClass = "text-sm font-bold text-[#4A2F1B] flex items-center";
   const sectionHeader =
     "md:col-span-2 text-lg font-bold text-[#4A2F1B] border-b-2 border-yellow-200 pb-2 mt-6 mb-2";
-  if (isSplashActive) {
-    return (
-      <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-yellow-400 p-6">
-        {/* Tree Image - Scaled for mobile, pushed to corner */}
-        <img
-          src={treeImg}
-          alt="Tree"
-          className="absolute bottom-0 left-0 w-1/2 max-w-[300px] object-contain opacity-80 sm:w-1/3 sm:opacity-100 md:w-1/4"
-        />
+if (isSplashActive) {
+  return (
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-yellow-400 p-8">
+      
+      {/* 1. Background Depth: Subtle radial gradient for a "glow" effect */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-yellow-300 via-yellow-400 to-yellow-500 opacity-50" />
 
-        {/* Main Content Container */}
-        <div className="z-10 flex w-full max-w-sm flex-col items-center text-center">
-          {/* Animation: Size responds to screen width */}
-          <div className="w-48 sm:w-64 md:w-80">
-            <Lottie animationData={beeAnimation} loop={true} />
-          </div>
+      {/* 2. The Tree: Added a subtle slide-up animation and soft shadow */}
+      <img
+        src={treeImg}
+        alt="Tree"
+        className="absolute bottom-0 left-0 w-1/2 max-w-[320px] object-contain transition-all duration-1000 ease-out animate-in slide-in-from-bottom-10 opacity-90 sm:w-1/3 sm:opacity-100 md:w-1/4"
+      />
 
-          {/* Logo: Using percentages or standard scale for better fit */}
+      {/* 3. Main Content: Increased z-index and added a glassmorphism feel (optional) */}
+      <div className="z-10 flex w-full max-w-md flex-col items-center text-center">
+        
+        {/* Lottie Container: Added a gentle "float" animation via CSS */}
+        <div className="w-56 drop-shadow-2xl sm:w-72 md:w-80 animate-bounce-slow">
+          <Lottie animationData={beeAnimation} loop={true} />
+        </div>
+
+        {/* 4. Logo: Added a slight tracking (letter spacing) and a soft entrance */}
+        <div className="mt-8 flex flex-col items-center space-y-4">
           <img
             src={honeyLogo}
             alt="Honey Hive Montessori House"
-            className="mt-6 w-3/4 max-w-[280px] sm:w-full"
+            className="w-4/5 max-w-[300px] drop-shadow-md sm:w-full transition-transform duration-700 hover:scale-105"
           />
+          
+          {/* 5. Loading Indicator: A small touch to show the app is "thinking" */}
+          <div className="mt-6 flex space-x-2">
+            <span className="h-2 w-2 animate-bounce rounded-full bg-orange-600 [animation-delay:-0.3s]"></span>
+            <span className="h-2 w-2 animate-bounce rounded-full bg-orange-500 [animation-delay:-0.15s]"></span>
+            <span className="h-2 w-2 animate-bounce rounded-full bg-orange-400"></span>
+          </div>
         </div>
       </div>
-    );
-  }
-
+    </div>
+  );
+}
   return (
     <div className="min-h-screen bg-yellow-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 animate-in fade-in duration-700">
       <div className="w-full max-w-4xl bg-white rounded-3xl shadow-xl border-t-8 border-[#4A2F1B] overflow-hidden">

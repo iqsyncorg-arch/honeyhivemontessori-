@@ -2,7 +2,11 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Layout from "@/components/layout/Layout";
 import SectionHeading from "@/components/ui/SectionHeading";
+import SEO from "@/components/SEO";
+import { Helmet } from "react-helmet-async";
+
 import { X, PlayCircle } from "lucide-react";
+
 import heroImage from "@/assets/hh.png";
 import artImage from "@/assets/handshake.jpeg";
 import classroomImage from "@/assets/child1.png";
@@ -14,13 +18,7 @@ import selling from "@/assets/selling.jpeg";
 import event from "@/assets/event.jpeg";
 import yellow from "@/assets/yellowday.png";
 
-const categories = [
-  "All",
-  "Classrooms",
-  "Activities",
-  "Events",
-  "Facilities",
-];
+const categories = ["All", "Classrooms", "Activities", "Events", "Facilities"];
 
 const galleryItems = [
   { id: 1, src: heroImage, title: "Learning Through Play", category: "Activities" },
@@ -39,14 +37,46 @@ const galleryItems = [
 
 const Gallery = () => {
   const [activeCategory, setActiveCategory] = useState("All");
-  const [selectedImage, setSelectedImage] = useState<typeof galleryItems[0] | null>(null);
+  const [selectedImage, setSelectedImage] =
+    useState<(typeof galleryItems)[0] | null>(null);
 
-  const filteredItems = activeCategory === "All"
-    ? galleryItems
-    : galleryItems.filter(item => item.category === activeCategory);
+  const filteredItems =
+    activeCategory === "All"
+      ? galleryItems
+      : galleryItems.filter((item) => item.category === activeCategory);
 
   return (
     <Layout>
+      {/* ✅ STEP 4 FIX: SEO */}
+      <SEO
+        title="Gallery | Honey Hive Montessori House (Thoraipakkam, Chennai)"
+        description="Explore the Honey Hive Montessori House gallery. See classrooms, activities, events, and facilities in our Montessori preschool in Thoraipakkam, Chennai."
+        canonical="/gallery"
+      />
+
+      {/* ✅ STEP 4 FIX: Schema for Gallery */}
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify(
+            {
+              "@context": "https://schema.org",
+              "@type": "ImageGallery",
+              name: "Honey Hive Montessori House Gallery",
+              url: "https://honeyhivemontessorihouse.com/gallery",
+              description:
+                "Photos from Honey Hive Montessori House including classrooms, activities, events, and facilities.",
+              isPartOf: {
+                "@type": "WebSite",
+                name: "Honey Hive Montessori House",
+                url: "https://honeyhivemontessorihouse.com/",
+              },
+            },
+            null,
+            2
+          )}
+        </script>
+      </Helmet>
+
       {/* Hero Section */}
       <section className="py-20 bg-[#FFD22F]/10">
         <div className="container mx-auto px-4 text-center">
@@ -60,8 +90,8 @@ const Gallery = () => {
               Our <span className="text-[#FFD22F]">Gallery</span>
             </h1>
             <p className="text-[#3B2A1A]/70 font-body text-lg">
-              A glimpse into the joyful learning experiences at Honey Hive.
-              See our children explore, create, and grow every day.
+              A glimpse into the joyful learning experiences at Honey Hive. See our
+              children explore, create, and grow every day.
             </p>
           </motion.div>
         </div>
@@ -107,6 +137,7 @@ const Gallery = () => {
                   <img
                     src={item.src}
                     alt={item.title}
+                    loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#3B2A1A]/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
@@ -203,12 +234,30 @@ const Gallery = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
             {[
-              { name: "Coffee with Principal", description: "Regular informal meetings with our school leadership" },
-              { name: "Parent Workshops", description: "Educational sessions on child development topics" },
-              { name: "Open Days", description: "Experience our classrooms and meet the teachers" },
-              { name: "Family Learning Days", description: "Interactive learning activities for the whole family" },
-              { name: "Cultural Celebrations", description: "Celebrating diversity through festivals and traditions" },
-              { name: "Orientation Sessions", description: "Helping new families transition smoothly" },
+              {
+                name: "Coffee with Principal",
+                description: "Regular informal meetings with our school leadership",
+              },
+              {
+                name: "Parent Workshops",
+                description: "Educational sessions on child development topics",
+              },
+              {
+                name: "Open Days",
+                description: "Experience our classrooms and meet the teachers",
+              },
+              {
+                name: "Family Learning Days",
+                description: "Interactive learning activities for the whole family",
+              },
+              {
+                name: "Cultural Celebrations",
+                description: "Celebrating diversity through festivals and traditions",
+              },
+              {
+                name: "Orientation Sessions",
+                description: "Helping new families transition smoothly",
+              },
             ].map((event, i) => (
               <motion.div
                 key={i}

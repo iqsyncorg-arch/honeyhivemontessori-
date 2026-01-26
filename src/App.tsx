@@ -12,8 +12,6 @@ import Admissions from "./pages/Admissions";
 import Contact from "./pages/Contact";
 import Visitors from "./pages/Visitors";
 import VisitorsList from "./pages/VisitorsList";
-
-
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,9 +30,10 @@ const App = () => (
           <Route path="/admissions" element={<Admissions />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/visitors" element={<Visitors />} />
-          <Route path="*" element={<NotFound />} />
           <Route path="/visitors-list" element={<VisitorsList />} />
 
+          {/* keep this always last */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

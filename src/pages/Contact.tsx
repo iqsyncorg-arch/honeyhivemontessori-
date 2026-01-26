@@ -1,19 +1,16 @@
+import React from "react";
 import { motion } from "framer-motion";
 import Layout from "@/components/layout/Layout";
+import SEO from "@/components/SEO";
+import { Helmet } from "react-helmet-async";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import {
-  MapPin,
-  Phone,
-  Mail,
-  Clock,
-  Facebook,
-  Instagram,
-  Send,
-} from "lucide-react";
+
+import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Send } from "lucide-react";
 
 const contactInfo = [
   {
@@ -81,6 +78,43 @@ const Contact = () => {
 
   return (
     <Layout>
+      {/* ✅ STEP 4 FIX: SEO for Contact Page */}
+      <SEO
+        title="Contact | Honey Hive Montessori House (Thoraipakkam, Chennai)"
+        description="Contact Honey Hive Montessori House in Thoraipakkam, Chennai. Call, email, or send an enquiry to schedule a school visit for Playgroup, Nursery, Pre-KG and Kindergarten."
+        canonical="/contact"
+      />
+
+      {/* ✅ STEP 4 FIX: ContactPage Schema */}
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify(
+            {
+              "@context": "https://schema.org",
+              "@type": "ContactPage",
+              name: "Contact - Honey Hive Montessori House",
+              url: "https://honeyhivemontessorihouse.com/contact",
+              about: {
+                "@type": "Preschool",
+                name: "Honey Hive Montessori House",
+                telephone: "+91-9952900051",
+                email: "honeyhivechennai@gmail.com",
+                address: {
+                  "@type": "PostalAddress",
+                  streetAddress: "Raama associates, 1 A, Vinayaganagar, MCN Nagar Extension",
+                  addressLocality: "Thoraipakkam",
+                  addressRegion: "Tamil Nadu",
+                  postalCode: "600097",
+                  addressCountry: "IN",
+                },
+              },
+            },
+            null,
+            2
+          )}
+        </script>
+      </Helmet>
+
       {/* Hero Section */}
       <section className="py-20 bg-[#FFD22F]/10">
         <div className="container mx-auto px-4 text-center">
@@ -93,6 +127,7 @@ const Contact = () => {
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-[#3B2A1A] mb-6">
               Connect with <span className="text-[#FFD22F]">Honey Hive</span>
             </h1>
+
             <blockquote className="text-lg italic text-[#3B2A1A]/70 border-l-4 border-[#FFD22F] pl-4 py-2 mb-6 text-left">
               “The greatest gifts we can give our children are the roots of responsibility and the wings of independence.”
               <span className="block font-bold mt-2 text-[#3B2A1A]">— Dr. Maria Montessori</span>
@@ -121,7 +156,10 @@ const Contact = () => {
                   {info.title}
                 </h3>
                 {info.details.map((detail, j) => (
-                  <p key={j} className="text-[#3B2A1A]/60 font-body text-sm leading-relaxed">
+                  <p
+                    key={j}
+                    className="text-[#3B2A1A]/60 font-body text-sm leading-relaxed"
+                  >
                     {detail}
                   </p>
                 ))}
@@ -141,29 +179,64 @@ const Contact = () => {
                 <h2 className="text-2xl font-heading font-bold text-[#3B2A1A] mb-6">
                   Inquiry Form
                 </h2>
+
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="name" className="text-[#3B2A1A]">Parent's Name</Label>
-                      <Input id="name" placeholder="Full Name" required className="border-[#3B2A1A]/10 focus:border-[#FFD22F] focus:ring-[#FFD22F]" />
+                      <Label htmlFor="name" className="text-[#3B2A1A]">
+                        Parent&apos;s Name
+                      </Label>
+                      <Input
+                        id="name"
+                        placeholder="Full Name"
+                        required
+                        className="border-[#3B2A1A]/10 focus:border-[#FFD22F] focus:ring-[#FFD22F]"
+                      />
                     </div>
+
                     <div className="space-y-2">
-                      <Label htmlFor="email" className="text-[#3B2A1A]">Email Address</Label>
-                      <Input id="email" type="email" placeholder="example@mail.com" required className="border-[#3B2A1A]/10 focus:border-[#FFD22F] focus:ring-[#FFD22F]" />
+                      <Label htmlFor="email" className="text-[#3B2A1A]">
+                        Email Address
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="example@mail.com"
+                        required
+                        className="border-[#3B2A1A]/10 focus:border-[#FFD22F] focus:ring-[#FFD22F]"
+                      />
                     </div>
                   </div>
+
                   <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-[#3B2A1A]">Phone Number</Label>
-                    <Input id="phone" type="tel" placeholder="+91 99529 00051" className="border-[#3B2A1A]/10 focus:border-[#FFD22F] focus:ring-[#FFD22F]" />
+                    <Label htmlFor="phone" className="text-[#3B2A1A]">
+                      Phone Number
+                    </Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+91 99529 00051"
+                      className="border-[#3B2A1A]/10 focus:border-[#FFD22F] focus:ring-[#FFD22F]"
+                    />
                   </div>
+
                   <div className="space-y-2">
-                    <Label htmlFor="message" className="text-[#3B2A1A]">How can we help you?</Label>
-                    <Textarea id="message" placeholder="Tell us about your child..." rows={5} required className="border-[#3B2A1A]/10 focus:border-[#FFD22F] focus:ring-[#FFD22F]" />
+                    <Label htmlFor="message" className="text-[#3B2A1A]">
+                      How can we help you?
+                    </Label>
+                    <Textarea
+                      id="message"
+                      placeholder="Tell us about your child..."
+                      rows={5}
+                      required
+                      className="border-[#3B2A1A]/10 focus:border-[#FFD22F] focus:ring-[#FFD22F]"
+                    />
                   </div>
-                  <Button 
-                    style={{ backgroundColor: "#FFD22F", color: "#3B2A1A" }} 
-                    size="lg" 
-                    type="submit" 
+
+                  <Button
+                    style={{ backgroundColor: "#FFD22F", color: "#3B2A1A" }}
+                    size="lg"
+                    type="submit"
                     className="w-full font-bold hover:opacity-90"
                   >
                     <Send className="w-5 h-5 mr-2" />
@@ -173,7 +246,7 @@ const Contact = () => {
               </div>
             </motion.div>
 
-            {/* Live Google Map */}
+            {/* Live Google Map + Social */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -191,17 +264,29 @@ const Contact = () => {
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                ></iframe>
+                />
               </div>
 
-              {/* Social Media & Follow */}
               <div className="bg-[#3B2A1A] p-8 rounded-3xl text-white shadow-lg">
-                <h3 className="text-xl font-heading font-bold mb-4 text-[#FFD22F]">Follow Our Journey</h3>
+                <h3 className="text-xl font-heading font-bold mb-4 text-[#FFD22F]">
+                  Follow Our Journey
+                </h3>
                 <div className="flex gap-4">
-                  <a href="https://www.facebook.com/Honeyhivechennai/" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center hover:bg-[#FFD22F] hover:text-[#3B2A1A] transition-all">
+                  <a
+                    href="https://www.facebook.com/Honeyhivechennai/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center hover:bg-[#FFD22F] hover:text-[#3B2A1A] transition-all"
+                  >
                     <Facebook className="w-6 h-6" />
                   </a>
-                  <a href="https://www.instagram.com/honeyhive_chennai/" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center hover:bg-[#FFD22F] hover:text-[#3B2A1A] transition-all">
+
+                  <a
+                    href="https://www.instagram.com/honeyhive_chennai/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center hover:bg-[#FFD22F] hover:text-[#3B2A1A] transition-all"
+                  >
                     <Instagram className="w-6 h-6" />
                   </a>
                 </div>
@@ -218,6 +303,7 @@ const Contact = () => {
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-center text-[#3B2A1A] mb-12">
               Frequently Asked Questions
             </h2>
+
             <div className="grid gap-4">
               {faqs.map((faq, i) => (
                 <motion.div
@@ -229,8 +315,10 @@ const Contact = () => {
                   className="bg-white p-6 rounded-2xl shadow-sm border border-[#FFD22F]/10 hover:border-[#FFD22F]/40 transition-colors"
                 >
                   <h3 className="font-heading font-bold text-[#3B2A1A] mb-2 flex items-start">
-                    <span className="text-[#FFD22F] font-black mr-3">Q.</span> {faq.q}
+                    <span className="text-[#FFD22F] font-black mr-3">Q.</span>{" "}
+                    {faq.q}
                   </h3>
+
                   <div className="font-body text-sm text-[#3B2A1A]/60 pl-7 border-l-2 border-[#FFD22F]/30 ml-2">
                     {faq.a}
                   </div>
