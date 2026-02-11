@@ -19,12 +19,15 @@ import {
   Users,
   Info,
   Trash2,
+  Edit2,
+  Check,
   ChevronRight as ArrowRight,
 } from "lucide-react";
 
 // --- FIX: IMPORT THE LOGO DIRECTLY ---
 import logoImg from "../assets/logo.png";
 import honeyLogo from "../assets/honey.png";
+import { toast } from "sonner";
 
 // --- Types ---
 type VisitorRow = {
@@ -89,6 +92,11 @@ const VisitorsList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
+  // Remarks Editing State
+  const [isEditingRemarks, setIsEditingRemarks] = useState(false);
+  const [tempRemarks, setTempRemarks] = useState("");
+  const [isUpdatingRemarks, setIsUpdatingRemarks] = useState(false);
+
   useEffect(() => {
     if (localStorage.getItem("honeyhive_auth") === "true") {
       setIsLoggedIn(true);
@@ -117,17 +125,50 @@ const VisitorsList = () => {
     ) {
       const { error } = await supabase.from("honeyhive").delete().eq("id", id);
       if (error) {
-        alert("Error deleting entry");
+        toast.error("Error deleting entry: " + error.message);
       } else {
+        toast.success("Entry deleted successfully");
         setData(data.filter((item) => item.id !== id));
         if (selectedVisitor?.id === id) setSelectedVisitor(null);
       }
     }
   };
 
+  const handleUpdateRemarks = async () => {
+    if (!selectedVisitor) return;
+
+    setIsUpdatingRemarks(true);
+    const { error } = await supabase
+      .from("honeyhive")
+      .update({ remarks: tempRemarks })
+      .eq("id", selectedVisitor.id);
+
+    if (error) {
+      toast.error("Error updating remarks: " + error.message);
+    } else {
+      toast.success("Remarks updated successfully");
+      // Update local state
+      setData((prev) =>
+        prev.map((item) =>
+          item.id === selectedVisitor.id
+            ? { ...item, remarks: tempRemarks }
+            : item
+        )
+      );
+      setSelectedVisitor((prev) =>
+        prev ? { ...prev, remarks: tempRemarks } : null
+      );
+      setIsEditingRemarks(false);
+    }
+    setIsUpdatingRemarks(false);
+  };
+
   // CSV Export Logic
   const handleExportCSV = () => {
-    if (filteredData.length === 0) return alert("No records to export");
+    if (filteredData.length === 0) {
+      toast.error("No records to export");
+      return;
+    }
 
     const headers = CSV_HEADERS.map((h) =>
       h.replace(/_/g, " ").toUpperCase()
@@ -203,11 +244,14 @@ const VisitorsList = () => {
             className="w-full space-y-4"
             onSubmit={(e) => {
               e.preventDefault();
-              if (phone === "7868000645" && pin === "1234") {
+              if (phone === "9952900051" && pin === "5577") {
                 setIsLoggedIn(true);
                 localStorage.setItem("honeyhive_auth", "true");
                 fetchVisitors();
-              } else alert("Invalid credentials");
+                toast.success("Welcome, Admin!");
+              } else {
+                toast.error("Invalid credentials");
+              }
             }}
           >
             <input
@@ -287,7 +331,7 @@ const VisitorsList = () => {
         </header>
 
         {/* Search & Filter */}
-        <div className="flex gap-3 mb-6">
+        <div className="flex gap-3 mb-8">
           <div className="relative flex-1">
             <Search
               className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
@@ -296,70 +340,105 @@ const VisitorsList = () => {
             <input
               type="text"
               placeholder="Search child, parent or phone..."
-              className="w-full pl-14 pr-6 py-4 bg-white border-none rounded-2xl shadow-sm focus:ring-2 focus:ring-yellow-400 transition"
+              className="w-full pl-14 pr-6 py-4 bg-white border border-slate-100 rounded-2xl shadow-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <button
             onClick={() => setShowFilters(true)}
-            className="p-4 bg-white rounded-2xl shadow-sm text-slate-500 hover:text-yellow-600"
+            className="p-4 bg-white border border-slate-100 rounded-2xl shadow-sm text-slate-500 hover:text-yellow-600 hover:border-yellow-200 transition-all"
           >
             <Filter size={20} />
           </button>
         </div>
 
         {/* LIST VIEW */}
-        <div className="space-y-3">
-          {currentItems.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white p-4 lg:p-6 rounded-[1.5rem] border border-slate-100 flex items-center justify-between shadow-sm hover:shadow-md transition-all group"
-            >
+        <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
+          {/* Desktop Header */}
+          <div className="hidden lg:grid lg:grid-cols-[2fr_1fr_1.5fr_1.2fr_1.2fr_auto] gap-4 px-8 py-5 bg-slate-50/50 border-b border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-400">
+            <div>Child Name</div>
+            <div>Grade</div>
+            <div>Parent</div>
+            <div>Phone</div>
+            <div>Enquiry Date</div>
+            <div className="text-right">Actions</div>
+          </div>
+
+          <div className="divide-y divide-slate-50">
+            {currentItems.map((item) => (
               <div
-                className="flex items-center gap-4 lg:gap-6 flex-1 cursor-pointer"
+                key={item.id}
                 onClick={() => setSelectedVisitor(item)}
+                className="group flex flex-col lg:grid lg:grid-cols-[2fr_1fr_1.5fr_1.2fr_1.2fr_auto] gap-4 px-6 lg:px-8 py-5 lg:items-center hover:bg-slate-50/80 transition-all cursor-pointer"
               >
-                <div className="w-12 h-12 lg:w-14 lg:h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-2xl group-hover:bg-yellow-50 transition-colors">
-                  {item.gender?.toLowerCase() === "male" ? "👦" : "👧"}
-                </div>
-                <div className="min-w-0">
-                  <h3 className="font-black text-slate-800 text-lg truncate uppercase">
-                    {item.child_name}
-                  </h3>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm font-bold text-slate-400">
-                    <span className="text-yellow-600 px-2 py-0.5 bg-yellow-50 rounded-md text-[10px] uppercase font-black">
+                {/* Mobile & Desktop: Child Name + Gender */}
+                <div className="flex items-center gap-4 min-w-0">
+                  <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-xl group-hover:bg-yellow-100 transition-colors shrink-0">
+                    {item.gender?.toLowerCase() === "male" ? "👦" : "👧"}
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-black text-slate-800 text-sm lg:text-base truncate uppercase tracking-tight">
+                      {item.child_name}
+                    </h3>
+                    <span className="lg:hidden text-yellow-600 text-[10px] font-black uppercase">
                       {item.admission_sought_for}
-                    </span>
-                    <span className="flex items-center gap-1 uppercase tracking-tighter">
-                      <User size={12} /> {item.parent_name}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Phone size={12} /> {item.phone_number}
                     </span>
                   </div>
                 </div>
-              </div>
 
-              <div className="flex items-center gap-2 ml-4">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteEntry(item.id, item.child_name);
-                  }}
-                  className="p-3 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition"
-                >
-                  <Trash2 size={20} />
-                </button>
-                <button
-                  onClick={() => setSelectedVisitor(item)}
-                  className="p-3 text-slate-300 hover:text-yellow-600 rounded-xl transition"
-                >
-                  <ArrowRight size={20} />
-                </button>
+                {/* Desktop: Grade */}
+                <div className="hidden lg:block">
+                  <span className="inline-flex px-2.5 py-1 bg-yellow-50 text-yellow-700 rounded-lg text-[11px] font-black uppercase">
+                    {item.admission_sought_for}
+                  </span>
+                </div>
+
+                {/* Parent Info */}
+                <div className="flex items-center gap-2 text-sm font-bold text-slate-500">
+                  <div className="lg:hidden w-5 text-slate-300"><User size={14} /></div>
+                  <span className="truncate">{item.parent_name}</span>
+                </div>
+
+                {/* Phone */}
+                <div className="flex items-center gap-2 text-sm font-bold text-slate-500">
+                  <div className="lg:hidden w-5 text-slate-300"><Phone size={14} /></div>
+                  <span className="tabular-nums whitespace-nowrap">{item.phone_number}</span>
+                </div>
+
+                {/* Date */}
+                <div className="flex items-center gap-2 text-sm font-bold text-slate-400 lg:text-slate-500">
+                  <div className="lg:hidden w-5 text-slate-300"><Calendar size={14} /></div>
+                  <span className="whitespace-nowrap italic lg:not-italic">{item.date_of_enquiry}</span>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center justify-end gap-1 mt-2 lg:mt-0">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteEntry(item.id, item.child_name);
+                    }}
+                    className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition"
+                    title="Delete"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                  <button
+                    className="p-2.5 text-slate-300 hover:text-yellow-600 lg:group-hover:translate-x-1 transition-all"
+                    title="View Profile"
+                  >
+                    <ArrowRight size={18} />
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+            {currentItems.length === 0 && (
+              <div className="p-20 text-center text-slate-400 font-bold">
+                No matching records found.
+              </div>
+            )}
+          </div>
         </div>
 
         {/* PAGINATION CONTROLS */}
@@ -377,11 +456,10 @@ const VisitorsList = () => {
                 <button
                   key={i}
                   onClick={() => setCurrentPage(i + 1)}
-                  className={`flex-shrink-0 w-10 h-10 rounded-xl font-black text-xs transition ${
-                    currentPage === i + 1
-                      ? "bg-slate-900 text-white shadow-lg"
-                      : "bg-white text-slate-400 hover:bg-slate-50"
-                  }`}
+                  className={`flex-shrink-0 w-10 h-10 rounded-xl font-black text-xs transition ${currentPage === i + 1
+                    ? "bg-slate-900 text-white shadow-lg"
+                    : "bg-white text-slate-400 hover:bg-slate-50"
+                    }`}
                 >
                   {i + 1}
                 </button>
@@ -430,7 +508,10 @@ const VisitorsList = () => {
                   <Trash2 size={20} />
                 </button>
                 <button
-                  onClick={() => setSelectedVisitor(null)}
+                  onClick={() => {
+                    setSelectedVisitor(null);
+                    setIsEditingRemarks(false);
+                  }}
                   className="p-3 bg-slate-100 rounded-2xl transition"
                 >
                   <X />
@@ -492,14 +573,59 @@ const VisitorsList = () => {
               </div>
 
               <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
-                <h4 className="flex items-center gap-2 text-xs font-black uppercase text-slate-400 mb-4">
-                  <Info size={16} /> Remarks
-                </h4>
-                <p className="text-sm font-bold text-slate-700 italic leading-relaxed">
-                  {selectedVisitor.remarks
-                    ? `"${selectedVisitor.remarks}"`
-                    : "No remarks provided."}
-                </p>
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="flex items-center gap-2 text-xs font-black uppercase text-slate-400">
+                    <Info size={16} /> Remarks
+                  </h4>
+                  {!isEditingRemarks && (
+                    <button
+                      onClick={() => {
+                        setTempRemarks(selectedVisitor.remarks || "");
+                        setIsEditingRemarks(true);
+                      }}
+                      className="p-2 text-yellow-600 hover:bg-yellow-100 rounded-lg transition"
+                    >
+                      <Edit2 size={16} />
+                    </button>
+                  )}
+                </div>
+
+                {isEditingRemarks ? (
+                  <div className="space-y-3">
+                    <textarea
+                      value={tempRemarks}
+                      onChange={(e) => setTempRemarks(e.target.value)}
+                      className="w-full p-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-yellow-400 min-h-[100px]"
+                      placeholder="Add remarks here..."
+                    />
+                    <div className="flex justify-end gap-2">
+                      <button
+                        onClick={() => setIsEditingRemarks(false)}
+                        className="px-4 py-2 text-xs font-black uppercase text-slate-400 hover:text-slate-600"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleUpdateRemarks}
+                        disabled={isUpdatingRemarks}
+                        className="flex items-center gap-2 px-4 py-2 bg-yellow-400 text-slate-900 rounded-xl text-xs font-black uppercase shadow-sm hover:bg-yellow-500 disabled:opacity-50"
+                      >
+                        {isUpdatingRemarks ? (
+                          <RefreshCw size={14} className="animate-spin" />
+                        ) : (
+                          <Check size={14} />
+                        )}
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm font-bold text-slate-700 italic leading-relaxed">
+                    {selectedVisitor.remarks
+                      ? `"${selectedVisitor.remarks}"`
+                      : "No remarks provided."}
+                  </p>
+                )}
                 <div className="mt-6 grid grid-cols-2 gap-4 border-t border-slate-200 pt-4">
                   <Item
                     label="Enquiry Date"
@@ -567,11 +693,10 @@ const VisitorsList = () => {
                     <button
                       key={g}
                       onClick={() => setFilters({ ...filters, gender: g })}
-                      className={`flex-1 py-3 rounded-xl text-[10px] font-black border transition ${
-                        filters.gender === g
-                          ? "bg-yellow-400 border-yellow-400 text-slate-900"
-                          : "bg-white text-slate-500 border-slate-200"
-                      }`}
+                      className={`flex-1 py-3 rounded-xl text-[10px] font-black border transition ${filters.gender === g
+                        ? "bg-yellow-400 border-yellow-400 text-slate-900"
+                        : "bg-white text-slate-500 border-slate-200"
+                        }`}
                     >
                       {g.toUpperCase()}
                     </button>
