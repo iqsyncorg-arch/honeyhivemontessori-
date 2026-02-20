@@ -223,60 +223,100 @@ const VisitorsList = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-[#FDFCF0] flex items-center justify-center p-6">
-        <div className="bg-white p-8 rounded-[3rem] shadow-2xl w-full max-w-md border border-yellow-100 flex flex-col items-center text-center">
-          {/* LOGO IN LOGIN */}
-          <div className="w-74 h-74 mb-6 flex items-center justify-center">
-            <img
-              src={honeyLogo}
-              alt="Logo"
-              className="max-w-full max-h-full object-contain"
-              onError={(e) => {
-                e.currentTarget.src =
-                  "https://ui-avatars.com/api/?name=Honey+Hive&background=fbbf24";
-              }}
-            />
+      <div className="min-h-screen bg-[#FDFCF0] flex items-center justify-center p-4 relative overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-yellow-200/30 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-yellow-100/50 rounded-full blur-[120px]" />
+
+        <div className="relative w-full max-w-md">
+          {/* BIG HERO LOGO */}
+          <div className="flex justify-center mb-10 transition-transform duration-700 hover:scale-105">
+            <div className="relative">
+              {/* Glow effect behind logo */}
+              <div className="absolute inset-0 bg-yellow-400/20 blur-3xl rounded-full"></div>
+              <img
+                src={honeyLogo}
+                alt="Honey Hive Logo"
+                className="relative w-48 h-48 md:w-56 md:h-56 object-contain drop-shadow-[0_20px_20px_rgba(0,0,0,0.1)] animate-pulse-slow"
+                style={{ animation: 'float 6s ease-in-out infinite' }}
+                onError={(e) => {
+                  e.currentTarget.src = "https://ui-avatars.com/api/?name=HH&background=fbbf24&size=512";
+                }}
+              />
+            </div>
           </div>
-          <h1 className="text-2xl font-black text-slate-800 mb-8 uppercase tracking-widest">
-            Admin Login
-          </h1>
-          <form
-            className="w-full space-y-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (phone === "9952900051" && pin === "5577") {
-                setIsLoggedIn(true);
-                localStorage.setItem("honeyhive_auth", "true");
-                fetchVisitors();
-                toast.success("Welcome, Admin!");
-              } else {
-                toast.error("Invalid credentials");
-              }
-            }}
-          >
-            <input
-              type="text"
-              placeholder="Mobile"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-yellow-400"
-            />
-            <input
-              type="password"
-              placeholder="PIN"
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-              className="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-yellow-400"
-            />
-            <button className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-lg active:scale-95 transition">
-              Sign In
-            </button>
-          </form>
+
+          <div className="bg-white p-10 rounded-[3.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)] border border-white/50 backdrop-blur-sm">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-black text-slate-800 uppercase tracking-tighter">
+                Honey <span className="text-yellow-500">Hive</span>
+              </h1>
+              <div className="h-1 w-12 bg-yellow-400 mx-auto mt-2 rounded-full"></div>
+              <p className="text-slate-400 text-[10px] uppercase tracking-[0.3em] mt-4 font-bold">
+                Secure Administrative Access
+              </p>
+            </div>
+
+            <form
+              className="space-y-4"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (phone === "9952900051" && pin === "5577") {
+                  setIsLoggedIn(true);
+                  localStorage.setItem("honeyhive_auth", "true");
+                  fetchVisitors();
+                  toast.success("Welcome back, Chief!");
+                } else {
+                  toast.error("Access Denied: Invalid Credentials");
+                }
+              }}
+            >
+              <div className="group">
+                <input
+                  type="tel"
+                  placeholder="Mobile Number"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full px-6 py-5 bg-slate-50 border-2 border-slate-50 rounded-2xl outline-none focus:border-yellow-400 focus:bg-white transition-all duration-300 text-slate-700 font-medium placeholder:text-slate-300"
+                />
+              </div>
+
+              <div className="group">
+                <input
+                  type="password"
+                  placeholder="Entry PIN"
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value)}
+                  className="w-full px-6 py-5 bg-slate-50 border-2 border-slate-50 rounded-2xl outline-none focus:border-yellow-400 focus:bg-white transition-all duration-300 text-slate-700 font-medium placeholder:text-slate-300"
+                />
+              </div>
+
+              <button className="w-full bg-slate-900 hover:bg-black text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-2xl hover:shadow-yellow-500/20 active:scale-95 transition-all duration-300 flex items-center justify-center gap-3">
+                <span>Sign In</span>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </form>
+
+            <div className="mt-8 pt-6 border-t border-slate-50 flex justify-center">
+              <span className="text-slate-300 text-[10px] font-bold uppercase tracking-widest">
+                Protected by HoneyHive Security
+              </span>
+            </div>
+          </div>
         </div>
+
+        <style>{`
+        @keyframes float {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+          100% { transform: translateY(0px); }
+        }
+      `}</style>
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-[#F8F9FC] text-slate-900">
       {/* Sidebar - Desktop Only */}
@@ -290,7 +330,7 @@ const VisitorsList = () => {
               className="max-w-full max-h-full object-contain"
             />
           </div>
-          <span className="font-black text-xl text-slate-800">HONEY HIVE</span>
+
         </div>
         <nav className="flex-1 space-y-2">
           <button className="w-full flex items-center gap-3 px-5 py-4 bg-yellow-50 text-yellow-700 rounded-2xl font-bold text-sm">
@@ -315,17 +355,23 @@ const VisitorsList = () => {
       </aside>
 
       <main className="lg:ml-72 p-4 lg:p-10 max-w-6xl mx-auto pb-24">
-        <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tight">
-            Records ({filteredData.length})
-          </h1>
-          <div className="flex items-center gap-2">
+        <header className="relative flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6 p-6 sm:p-8 bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-400/10 rounded-full -mr-16 -mt-16 blur-3xl" />
+          <div className="relative z-10">
+            <h1 className="text-3xl sm:text-4xl font-black text-slate-900 uppercase tracking-tighter">
+              Admin <span className="text-yellow-500">Dashboard</span>
+            </h1>
+            <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">
+              {filteredData.length} Total Enquiries Found
+            </p>
+          </div>
+          <div className="relative z-10 flex items-center gap-3">
             <button
               onClick={fetchVisitors}
-              className="flex items-center justify-center gap-2 bg-white px-6 py-3 rounded-2xl font-bold shadow-sm hover:bg-slate-50"
+              className="flex items-center justify-center gap-2 bg-[#4A2F1B] text-white px-8 py-4 rounded-2xl font-black uppercase text-xs shadow-lg hover:shadow-yellow-500/20 active:scale-95 transition-all"
             >
-              <RefreshCw size={18} className={loading ? "animate-spin" : ""} />{" "}
-              Refresh
+              <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+              {loading ? "Updating..." : "Refresh Records"}
             </button>
           </div>
         </header>
@@ -569,6 +615,10 @@ const VisitorsList = () => {
                     isLink={`mailto:${selectedVisitor.email_id}`}
                   />
                   <Item label="Address" val={selectedVisitor.address} />
+                  <Item
+                    label="Interaction By"
+                    val={selectedVisitor.interaction_done_by || "Not Assigned"}
+                  />
                 </DataGroup>
               </div>
 
@@ -679,9 +729,12 @@ const VisitorsList = () => {
                   }
                 >
                   <option value="all">All Grades</option>
-                  <option value="Pre-Kg">Pre-Kg</option>
-                  <option value="LKG">LKG</option>
-                  <option value="UKG">UKG</option>
+                  <option value="Grub (Playgroup)">Grub (Playgroup)</option>
+                  <option value="Brood (Pre-KG)">Brood (Pre-KG)</option>
+                  <option value="Junior Bees (LKG)">Junior Bees (LKG)</option>
+                  <option value="Senior Bees (UKG)">Senior Bees (UKG)</option>
+                  <option value="Radiant Bees (Special Education)">Radiant Bees (Special Education)</option>
+                  <option value="Daycare">Daycare</option>
                 </select>
               </div>
               <div>
@@ -712,8 +765,9 @@ const VisitorsList = () => {
             </button>
           </div>
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 };
 

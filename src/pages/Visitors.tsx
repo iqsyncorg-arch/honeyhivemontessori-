@@ -154,36 +154,49 @@ const Visitors = () => {
   };
 
   const saveData = async () => {
+    console.log("Submitting form data:", formData);
     const validationError = validateForm();
     if (validationError) {
+      console.warn("Validation failed:", validationError);
       toast.error(validationError);
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("honeyhive").insert([formData]);
-    setLoading(false);
-    if (error) {
-      toast.error("Error: " + error.message);
-      return;
+    try {
+      console.log("Attempting Supabase insert...");
+      const { data, error } = await supabase.from("honeyhive").insert([formData]).select();
+
+      if (error) {
+        console.error("Supabase Error:", error);
+        toast.error("Error: " + error.message);
+        return;
+      }
+
+      console.log("Submission successful! Response data:", data);
+      toast.success("Saved Successfully!");
+      setFormData({
+        date_of_enquiry: getTodayDate(),
+        child_name: "",
+        dob: "",
+        age_years: "",
+        age_months: "",
+        gender: "",
+        previous_school: "",
+        languages_spoken: "",
+        admission_sought_for: "",
+        parent_name: "",
+        relationship: "",
+        phone_number: "",
+        email_id: "",
+        address: "",
+        how_did_you_hear: "",
+      });
+    } catch (err) {
+      console.error("Unexpected error during submission:", err);
+      toast.error("An unexpected error occurred. Please check the console.");
+    } finally {
+      setLoading(false);
     }
-    toast.success("Saved Successfully!");
-    setFormData({
-      date_of_enquiry: getTodayDate(),
-      child_name: "",
-      dob: "",
-      age_years: "",
-      age_months: "",
-      gender: "",
-      previous_school: "",
-      languages_spoken: "",
-      admission_sought_for: "",
-      parent_name: "",
-      relationship: "",
-      phone_number: "",
-      email_id: "",
-      address: "",
-      how_did_you_hear: "",
-    });
   };
 
   const inputClass =
@@ -236,33 +249,54 @@ const Visitors = () => {
     <div className="min-h-screen bg-yellow-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 animate-in fade-in duration-700">
       <div className="w-full max-w-4xl bg-white rounded-3xl shadow-xl border-t-8 border-[#4A2F1B] overflow-hidden">
         {/* Header Section */}
-        <div className="bg-white p-6 sm:p-10 text-center border-b border-gray-100">
-          <span className="bg-yellow-100 text-[#4A2F1B] px-4 py-1 rounded-full text-xs font-bold tracking-widest uppercase">
+        <div className="relative bg-gradient-to-b from-yellow-50 via-white to-white px-5 py-10 sm:p-12 text-center border-b border-gray-100 overflow-hidden">
+          {/* Decorative Elements */}
+          <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none"
+            style={{ backgroundImage: `radial-gradient(#4A2F1B 1px, transparent 1px)`, backgroundSize: '20px 20px' }} />
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-yellow-200/30 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-orange-100/30 rounded-full blur-3xl" />
+
+          <span className="relative z-10 bg-[#4A2F1B] text-white px-6 py-2 rounded-full text-[10px] sm:text-xs font-black tracking-[0.2em] uppercase shadow-lg mb-8 inline-block animate-in fade-in slide-in-from-top-4 duration-700">
             Parent Enquiry Form
           </span>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-6">
-            <img
-              src={logo}
-              alt="Honey Hive Logo"
-              className="w-20 h-20 object-contain"
-            />
+          <div className="relative z-10 flex flex-col items-center justify-center gap-6 mt-2">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-yellow-400 rounded-full blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-700" />
+                <img
+                  src={logo}
+                  alt="Honey Hive Logo"
+                  className="relative w-32 h-32 sm:w-40 sm:h-40 object-contain transform transition-all duration-700 hover:scale-110 drop-shadow-2xl animate-in zoom-in-75 duration-500"
+                />
+              </div>
 
-            <img
-              src={honeyLogo} // <-- your text/logo image
-              alt="Honey Hive Montessori House"
-              className="w-60 sm:w-72 object-contain"
-            />
+              <div className="flex flex-col items-center sm:items-start space-y-3">
+                <img
+                  src={honeyLogo}
+                  alt="Honey Hive Montessori House"
+                  className="w-full max-w-[280px] sm:max-w-[480px] object-contain transform transition-all duration-700 hover:brightness-105 drop-shadow-lg animate-in fade-in slide-in-from-right-4 duration-700"
+                />
+                <div className="hidden sm:block h-1.5 w-24 bg-yellow-400 rounded-full ml-1" />
+              </div>
+            </div>
+
+            <div className="mt-4 transition-transform duration-500 hover:scale-105 active:scale-95">
+              <div className="inline-block bg-[#E63946] text-white px-8 py-3 rounded-full text-sm sm:text-base font-black shadow-[0_10px_25px_-5px_rgba(230,57,70,0.4)] transform -rotate-1 hover:rotate-0 transition-all cursor-pointer select-none">
+                The best place to Bee! 🐝
+              </div>
+            </div>
           </div>
 
-          <div className="mt-4 inline-block bg-red-500 text-white px-6 py-1.5 rounded-full text-sm font-bold shadow-md transform -rotate-1">
-            The best place to Bee!
-          </div>
-
-          <p className="text-[10px] sm:text-xs mt-6 text-gray-500 leading-relaxed max-w-md mx-auto italic">
-            Managed by: Honey Hive Montessori Educational Trust.
+          <p className="relative z-10 text-[10px] sm:text-xs mt-10 text-gray-500 leading-relaxed max-w-lg mx-auto italic font-medium opacity-80">
+            Managed by:{" "}
+            <span className="text-[#4A2F1B] font-bold">
+              Honey Hive Montessori Educational Trust
+            </span>
             <br />
-            (Registered under Tamilnadu. Reg No: 118/2021)
+            <span className="text-[9px] sm:text-[11px]">
+              (Registered under Tamilnadu. Reg No: 118/2021)
+            </span>
           </p>
         </div>
 
