@@ -259,23 +259,23 @@ const Visitors = () => {
 
 
       {/* Header Section */}
-      <div className="relative bg-white px-2 pt-2 sm:pt-4 text-center border-b border-gray-100">
-        <span className="relative z-10 bg-[#4A2F1B] text-white border border-[#4A2F1B] px-6 py-2 rounded-full text-base sm:text-xl font-black tracking-[0.1em] uppercase shadow-lg mb-2 inline-block">
+      <div className="relative bg-white px-4 pt-4 sm:pt-6 text-center border-b border-gray-100">
+        <span className="relative z-10 bg-[#4A2F1B] text-white border border-[#4A2F1B] px-6 py-2 rounded-full text-sm sm:text-xl font-black tracking-[0.1em] uppercase shadow-lg mb-4 inline-block">
           Parent Enquiry Form
         </span>
 
-        <div className="relative z-10 flex flex-col items-center justify-center gap-4 mt-0">
+        <div className="relative z-10 flex flex-col items-center justify-center gap-4 mt-2">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10">
             <div className="relative group">
               <img
                 src={logo}
                 alt="Honey Hive Logo"
-                className="relative w-48 h-48 sm:w-48 sm:h-64 object-contain transform transition-all duration-700 hover:scale-110 drop-shadow-xl"
+                className="relative w-32 h-32 sm:w-48 sm:h-64 object-contain transform transition-all duration-700 hover:scale-110 drop-shadow-xl"
               />
             </div>
           </div>
 
-          <p className="text-sm sm:text-base text-gray-900 text-center max-w-xl mx-auto font-medium mb-4">
+          <p className="text-sm sm:text-base text-gray-900 text-center max-w-xl mx-auto font-medium mb-6 px-2">
             We're happy you visited us today!<br />
             Please fill this form so we can learn more about your child.
           </p>
