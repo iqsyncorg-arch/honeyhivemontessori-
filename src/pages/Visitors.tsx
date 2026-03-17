@@ -258,12 +258,12 @@ const Visitors = () => {
 
 
       {/* Header Section */}
-      <div className="relative bg-white px-2 py-6 sm:py-8 text-center border-b border-gray-100">
-        <span className="relative z-10 bg-[#4A2F1B] text-white border border-[#4A2F1B] px-5 py-1.5 rounded-full text-[10px] sm:text-xs font-black tracking-[0.2em] uppercase shadow-lg mb-4 inline-block">
+      <div className="relative bg-white px-2 pt-2 sm:pt-4 text-center border-b border-gray-100">
+        <span className="relative z-10 bg-[#4A2F1B] text-white border border-[#4A2F1B] px-6 py-2 rounded-full text-base sm:text-xl font-black tracking-[0.1em] uppercase shadow-lg mb-2 inline-block">
           Parent Enquiry Form
         </span>
 
-        <div className="relative z-10 flex flex-col items-center justify-center gap-6 mt-2">
+        <div className="relative z-10 flex flex-col items-center justify-center gap-4 mt-0">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10">
             <div className="relative group">
               <img
@@ -274,18 +274,15 @@ const Visitors = () => {
             </div>
           </div>
 
-          <div className="mt-0 transition-transform duration-500 hover:scale-105 active:scale-95">
-          </div>
+          <p className="text-sm sm:text-base text-gray-900 text-center max-w-xl mx-auto font-medium mb-4">
+            We're happy you visited us today!<br />
+            Please fill this form so we can learn more about your child.
+          </p>
         </div>
       </div>
 
       {/* Form Body */}
-      <div className="py-6 sm:py-8 px-2 sm:px-6">
-        <p className="text-sm sm:text-base text-gray-900 text-center mb-6 max-w-xl mx-auto font-medium">
-          Thank you for your interest! Please fill out this brief form so we can
-          learn more about your family and child.
-        </p>
-
+      <div className="py-2 sm:py-4 px-2 sm:px-6">
         <form className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
 
           <div className="md:col-span-2">
@@ -302,7 +299,6 @@ const Visitors = () => {
           </div>
 
           <div className={sectionHeader}>
-            <span className="bg-yellow-100 text-[#4A2F1B] w-8 h-8 rounded-full flex items-center justify-center text-sm mr-2">1</span>
             Child’s Information
           </div>
 
@@ -420,7 +416,6 @@ const Visitors = () => {
           </div>
 
           <div className={sectionHeader}>
-            <span className="bg-yellow-100 text-[#4A2F1B] w-8 h-8 rounded-full flex items-center justify-center text-sm mr-2">2</span>
             Parent/Guardian Information
           </div>
 
@@ -495,7 +490,6 @@ const Visitors = () => {
           </div>
 
           <div className={sectionHeader}>
-            <span className="bg-yellow-100 text-[#4A2F1B] w-8 h-8 rounded-full flex items-center justify-center text-sm mr-2">3</span>
             Additional Information
           </div>
 
