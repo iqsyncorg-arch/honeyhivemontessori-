@@ -6,6 +6,7 @@ import beeAnimation from "../assets/BEE-lieve.json";
 import honeyLogo from "../assets/honey.png";
 import treeImg from "../assets/tree.png";
 import { toast } from "sonner";
+import { Facebook, Instagram } from "lucide-react";
 
 type FormData = {
   date_of_enquiry: string;
@@ -564,6 +565,37 @@ const Visitors = () => {
             <span>📞 99529 00051</span>
             <span>📞 97907 30051</span>
             <span>☎️ 044-4850 2661</span>
+          </div>
+
+          {/* Social Media Links */}
+          <div className="flex justify-center gap-6 pt-6">
+            <a
+              href="https://www.facebook.com/Honeyhivechennai/"
+              target="_blank"
+              rel="noreferrer"
+              className="w-10 h-10 rounded-full bg-[#4A2F1B] text-white flex items-center justify-center hover:bg-[#321f11] transition-all shadow-md hover:scale-110 active:scale-95"
+              aria-label="Facebook"
+            >
+              <Facebook className="w-5 h-5" />
+            </a>
+            <a
+              href="https://www.instagram.com/honeyhive_chennai/"
+              target="_blank"
+              rel="noreferrer"
+              className="w-10 h-10 rounded-full bg-[#4A2F1B] text-white flex items-center justify-center hover:bg-[#321f11] transition-all shadow-md hover:scale-110 active:scale-95"
+              aria-label="Instagram"
+            >
+              <Instagram className="w-5 h-5" />
+            </a>
+            <a
+              href="https://in.pinterest.com/honeyhivemontessorihouse/"
+              target="_blank"
+              rel="noreferrer"
+              className="w-10 h-10 rounded-full bg-[#4A2F1B] text-white flex items-center justify-center hover:bg-[#321f11] transition-all shadow-md hover:scale-110 active:scale-95 text-xl font-bold italic"
+              aria-label="Pinterest"
+            >
+              P
+            </a>
           </div>
 
         </div>
