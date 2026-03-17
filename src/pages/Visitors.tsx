@@ -208,24 +208,39 @@ const Visitors = () => {
 
   if (isSplashActive) {
     return (
-      <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-yellow-400 p-8">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-yellow-300 via-yellow-400 to-yellow-500 opacity-50" />
+      <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-yellow-50 p-8">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-yellow-100 via-yellow-200 to-yellow-300 opacity-30" />
         <img
           src={treeImg}
           alt="Tree"
-          className="absolute bottom-0 left-0 w-1/2 max-w-[320px] object-contain transition-all duration-1000 ease-out animate-in slide-in-from-bottom-10 opacity-90 sm:w-1/3 sm:opacity-100 md:w-1/4"
+          className="absolute -bottom-10 -left-10 w-[150%] sm:w-[120%] md:w-[100%] max-w-none object-contain opacity-100"
         />
-        <div className="z-10 flex w-full max-w-md flex-col items-center text-center">
-          <div className="w-56 drop-shadow-2xl sm:w-72 md:w-80 animate-bounce-slow">
-            <Lottie animationData={beeAnimation} loop={true} />
-          </div>
-          <div className="mt-8 flex flex-col items-center space-y-4">
+        <div className="z-10 flex w-full max-w-lg flex-col items-center text-center -mt-16 sm:-mt-24">
+          <div className="flex flex-col items-center justify-center">
             <img
               src={honeyLogo}
               alt="Honey Hive Montessori House"
-              className="w-4/5 max-w-[300px] drop-shadow-md sm:w-full transition-transform duration-700 hover:scale-105"
+              className="w-full max-w-[480px] drop-shadow-md transition-transform duration-700 hover:scale-110 mx-auto transform translate-x-8"
             />
-            <div className="mt-6 flex space-x-2">
+
+            <p className="text-sm sm:text-lg mt-6 text-black leading-relaxed max-w-md mx-auto italic font-black">
+              Managed by:{" "}
+              <span className="text-black">
+                Honey Hive Montessori Educational Trust
+              </span>
+              <br />
+              <span className="text-xs sm:text-sm font-black opacity-80">
+                (Registered under Tamilnadu. Reg No: 118/2021)
+              </span>
+            </p>
+          </div>
+
+          <div className="mt-8 flex flex-col items-center space-y-4">
+            <div className="w-48 drop-shadow-2xl sm:w-64 md:w-72 animate-bounce-slow py-4">
+              <Lottie animationData={beeAnimation} loop={true} />
+            </div>
+
+            <div className="flex space-x-2">
               <span className="h-2 w-2 animate-bounce rounded-full bg-orange-600 [animation-delay:-0.3s]"></span>
               <span className="h-2 w-2 animate-bounce rounded-full bg-orange-500 [animation-delay:-0.15s]"></span>
               <span className="h-2 w-2 animate-bounce rounded-full bg-orange-400"></span>
@@ -243,7 +258,7 @@ const Visitors = () => {
 
       {/* Header Section */}
       <div className="relative bg-white px-2 py-6 sm:py-8 text-center border-b border-gray-100">
-        <span className="relative z-10 bg-yellow-100 text-[#4A2F1B] border border-yellow-200 px-5 py-1.5 rounded-full text-[10px] sm:text-xs font-black tracking-[0.2em] uppercase shadow-sm mb-4 inline-block">
+        <span className="relative z-10 bg-[#4A2F1B] text-white border border-[#4A2F1B] px-5 py-1.5 rounded-full text-[10px] sm:text-xs font-black tracking-[0.2em] uppercase shadow-lg mb-4 inline-block">
           Parent Enquiry Form
         </span>
 
@@ -256,35 +271,16 @@ const Visitors = () => {
                 className="relative w-48 h-48 sm:w-48 sm:h-64 object-contain transform transition-all duration-700 hover:scale-110 drop-shadow-xl"
               />
             </div>
-            {/* <div className="flex flex-col items-center sm:items-start space-y-3 pl-6">
-              <img
-                src={honeyLogo}
-                alt="Honey Hive Montessori House"
-                className="w-full max-w-[380px] sm:max-w-[600px] object-contain sm:ml-6"
-              />
-              <div className="hidden sm:block h-[3px] w-24 bg-yellow-400 rounded-full ml-1" />
-            </div> */}
           </div>
 
-          <div className="mt-3 transition-transform duration-500 hover:scale-105 active:scale-95">
+          <div className="mt-0 transition-transform duration-500 hover:scale-105 active:scale-95">
           </div>
         </div>
-
-        <p className="relative z-10 text-sm sm:text-base mt-4 text-gray-600 leading-relaxed max-w-md mx-auto italic font-medium">
-          Managed by:{" "}
-          <span className="text-[#4A2F1B] font-bold text-base sm:text-lg">
-            Honey Hive Montessori Educational Trust
-          </span>
-          <br />
-          <span className="text-xs sm:text-sm text-gray-500">
-            (Registered under Tamilnadu. Reg No: 118/2021)
-          </span>
-        </p>
       </div>
 
       {/* Form Body */}
       <div className="py-6 sm:py-8 px-2 sm:px-6">
-        <p className="text-sm sm:text-base text-gray-600 text-center mb-6 max-w-xl mx-auto">
+        <p className="text-sm sm:text-base text-gray-900 text-center mb-6 max-w-xl mx-auto font-medium">
           Thank you for your interest! Please fill out this brief form so we can
           learn more about your family and child.
         </p>
@@ -424,7 +420,7 @@ const Visitors = () => {
 
           <div className={sectionHeader}>
             <span className="bg-yellow-100 text-[#4A2F1B] w-8 h-8 rounded-full flex items-center justify-center text-sm mr-2">2</span>
-            Parent/Guardian Details
+            Parent/Guardian Information
           </div>
 
           <div className="md:col-span-2">
@@ -443,7 +439,7 @@ const Visitors = () => {
 
           <div>
             <label className={labelClass}>
-              Relationship to Child <RequiredStar />
+              Relationship to the Child <RequiredStar />
             </label>
             <input
               type="text"
@@ -499,7 +495,7 @@ const Visitors = () => {
 
           <div className={sectionHeader}>
             <span className="bg-yellow-100 text-[#4A2F1B] w-8 h-8 rounded-full flex items-center justify-center text-sm mr-2">3</span>
-            Final Details
+            Additional Information
           </div>
 
           <div className="md:col-span-2">
