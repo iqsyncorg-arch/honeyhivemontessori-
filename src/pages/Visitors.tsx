@@ -216,31 +216,32 @@ const Visitors = () => {
           alt="Tree"
           className="absolute -bottom-10 -left-10 w-[150%] sm:w-[120%] md:w-[100%] max-w-none object-contain opacity-100"
         />
+        {/* Animated Bee positioned at the top left */}
+        <div className="absolute top-[18%] left-[5%] sm:left-[8%] z-20 w-40 drop-shadow-2xl sm:w-60 md:w-72 animate-bounce-slow py-4 transform -rotate-12">
+          <Lottie animationData={beeAnimation} loop={true} />
+        </div>
+
         <div className="z-10 flex w-full max-w-lg flex-col items-center text-center -mt-16 sm:-mt-24">
           <div className="flex flex-col items-center justify-center">
             <img
               src={honeyLogo}
               alt="Honey Hive Montessori House"
-              className="w-full max-w-[480px] drop-shadow-md transition-transform duration-700 hover:scale-110 mx-auto transform translate-x-8"
+              className="w-full max-w-[750px] drop-shadow-md transition-transform duration-700 hover:scale-110 mx-auto transform translate-x-8 translate-y-32"
             />
 
-            <p className="text-sm sm:text-lg mt-6 text-black leading-relaxed max-w-md mx-auto italic font-black">
+            <p className="text-xs sm:text-base mt-6 text-black leading-relaxed max-w-md mx-auto italic font-black transform translate-y-32">
               Managed by:{" "}
               <span className="text-black">
                 Honey Hive Montessori Educational Trust
               </span>
               <br />
-              <span className="text-xs sm:text-sm font-black opacity-80">
+              <span className="text-[10px] sm:text-xs font-black opacity-80">
                 (Registered under Tamilnadu. Reg No: 118/2021)
               </span>
             </p>
           </div>
 
-          <div className="mt-8 flex flex-col items-center space-y-4">
-            <div className="w-48 drop-shadow-2xl sm:w-64 md:w-72 animate-bounce-slow py-4">
-              <Lottie animationData={beeAnimation} loop={true} />
-            </div>
-
+          <div className="mt-8 flex flex-col items-center space-y-4 transform translate-y-32">
             <div className="flex space-x-2">
               <span className="h-2 w-2 animate-bounce rounded-full bg-orange-600 [animation-delay:-0.3s]"></span>
               <span className="h-2 w-2 animate-bounce rounded-full bg-orange-500 [animation-delay:-0.15s]"></span>
