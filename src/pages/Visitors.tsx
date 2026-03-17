@@ -226,10 +226,10 @@ const Visitors = () => {
             <img
               src={honeyLogo}
               alt="Honey Hive Montessori House"
-              className="w-full max-w-[750px] drop-shadow-md transition-transform duration-700 hover:scale-110 mx-auto transform translate-x-8 translate-y-32"
+              className="w-full max-w-[900px] drop-shadow-md transition-transform duration-700 hover:scale-110 mx-auto transform translate-x-8 translate-y-44"
             />
 
-            <p className="text-xs sm:text-base mt-6 text-black leading-relaxed max-w-md mx-auto italic font-black transform translate-y-32">
+            <p className="text-xs sm:text-base mt-6 text-black leading-relaxed max-w-md mx-auto italic font-black transform translate-y-44">
               Managed by:{" "}
               <span className="text-black">
                 Honey Hive Montessori Educational Trust
@@ -241,7 +241,7 @@ const Visitors = () => {
             </p>
           </div>
 
-          <div className="mt-8 flex flex-col items-center space-y-4 transform translate-y-32">
+          <div className="mt-8 flex flex-col items-center space-y-4 transform translate-y-44">
             <div className="flex space-x-2">
               <span className="h-2 w-2 animate-bounce rounded-full bg-orange-600 [animation-delay:-0.3s]"></span>
               <span className="h-2 w-2 animate-bounce rounded-full bg-orange-500 [animation-delay:-0.15s]"></span>
