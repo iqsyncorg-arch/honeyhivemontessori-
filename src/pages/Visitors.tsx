@@ -42,7 +42,7 @@ const hearOptions = [
   "Other",
 ];
 
-const RequiredStar = () => <span className="text-red-600 ml-1">*</span>;
+const RequiredStar = () => <span className="text-red-500 ml-1.5 font-bold">*</span>;
 
 const getTodayDate = () => {
   const today = new Date();
@@ -91,7 +91,7 @@ const Visitors = () => {
 
   const [loading, setLoading] = useState(false);
 
-  // ✅ Splash Screen Timer + Auto fill Date
+  // Splash Screen Timer + Auto fill Date
   useEffect(() => {
     setFormData((prev) => ({
       ...prev,
@@ -154,25 +154,20 @@ const Visitors = () => {
   };
 
   const saveData = async () => {
-    console.log("Submitting form data:", formData);
     const validationError = validateForm();
     if (validationError) {
-      console.warn("Validation failed:", validationError);
       toast.error(validationError);
       return;
     }
     setLoading(true);
     try {
-      console.log("Attempting Supabase insert...");
       const { data, error } = await supabase.from("honeyhive").insert([formData]).select();
 
       if (error) {
-        console.error("Supabase Error:", error);
         toast.error("Error: " + error.message);
         return;
       }
 
-      console.log("Submission successful! Response data:", data);
       toast.success("Saved Successfully!");
       setFormData({
         date_of_enquiry: getTodayDate(),
@@ -192,49 +187,44 @@ const Visitors = () => {
         how_did_you_hear: "",
       });
     } catch (err) {
-      console.error("Unexpected error during submission:", err);
-      toast.error("An unexpected error occurred. Please check the console.");
+      toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  // Modernized UI Classes
   const inputClass =
-    "w-full border border-gray-300 rounded-lg px-4 py-2.5 mt-1 focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition-all text-gray-800";
+    "w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3 mt-1.5 focus:bg-white focus:ring-4 focus:ring-yellow-400/20 focus:border-yellow-500 outline-none transition-all duration-200 text-gray-800 placeholder-gray-400 hover:border-yellow-300";
   const labelClass = "text-sm font-bold text-[#4A2F1B] flex items-center";
   const sectionHeader =
-    "md:col-span-2 text-lg font-bold text-[#4A2F1B] border-b-2 border-yellow-200 pb-2 mt-6 mb-2";
+    "md:col-span-2 text-xl font-black text-[#4A2F1B] border-b-2 border-yellow-200 pb-3 mt-8 mb-4 flex items-center gap-2";
+
+  const getCardClass = (isChecked: boolean) =>
+    `flex items-center p-4 border rounded-xl cursor-pointer transition-all duration-200 ${isChecked
+      ? "border-[#4A2F1B] bg-yellow-50 shadow-sm ring-1 ring-[#4A2F1B]"
+      : "border-gray-200 bg-white hover:border-yellow-300 hover:bg-yellow-50/30"
+    }`;
+
   if (isSplashActive) {
     return (
       <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-yellow-400 p-8">
-
-        {/* 1. Background Depth: Subtle radial gradient for a "glow" effect */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-yellow-300 via-yellow-400 to-yellow-500 opacity-50" />
-
-        {/* 2. The Tree: Added a subtle slide-up animation and soft shadow */}
         <img
           src={treeImg}
           alt="Tree"
           className="absolute bottom-0 left-0 w-1/2 max-w-[320px] object-contain transition-all duration-1000 ease-out animate-in slide-in-from-bottom-10 opacity-90 sm:w-1/3 sm:opacity-100 md:w-1/4"
         />
-
-        {/* 3. Main Content: Increased z-index and added a glassmorphism feel (optional) */}
         <div className="z-10 flex w-full max-w-md flex-col items-center text-center">
-
-          {/* Lottie Container: Added a gentle "float" animation via CSS */}
           <div className="w-56 drop-shadow-2xl sm:w-72 md:w-80 animate-bounce-slow">
             <Lottie animationData={beeAnimation} loop={true} />
           </div>
-
-          {/* 4. Logo: Added a slight tracking (letter spacing) and a soft entrance */}
           <div className="mt-8 flex flex-col items-center space-y-4">
             <img
               src={honeyLogo}
               alt="Honey Hive Montessori House"
               className="w-4/5 max-w-[300px] drop-shadow-md sm:w-full transition-transform duration-700 hover:scale-105"
             />
-
-            {/* 5. Loading Indicator: A small touch to show the app is "thinking" */}
             <div className="mt-6 flex space-x-2">
               <span className="h-2 w-2 animate-bounce rounded-full bg-orange-600 [animation-delay:-0.3s]"></span>
               <span className="h-2 w-2 animate-bounce rounded-full bg-orange-500 [animation-delay:-0.15s]"></span>
@@ -245,359 +235,345 @@ const Visitors = () => {
       </div>
     );
   }
+
   return (
-    <div className="min-h-screen bg-yellow-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 animate-in fade-in duration-700">
-      <div className="w-full max-w-4xl bg-white rounded-3xl shadow-xl border-t-8 border-[#4A2F1B] overflow-hidden">
-        {/* Header Section */}
-        <div className="relative bg-gradient-to-b from-yellow-50 via-white to-white px-5 py-10 sm:p-12 text-center border-b border-gray-100 overflow-hidden">
-          {/* Decorative Elements */}
-          <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none"
-            style={{ backgroundImage: `radial-gradient(#4A2F1B 1px, transparent 1px)`, backgroundSize: '20px 20px' }} />
-          <div className="absolute -top-10 -right-10 w-40 h-40 bg-yellow-200/30 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-orange-100/30 rounded-full blur-3xl" />
+    // Reverted completely to flat, single-layer white layout
+    <div className="min-h-screen bg-white flex flex-col items-center p-4 sm:p-6 lg:p-8 animate-in fade-in duration-700">
 
-          <span className="relative z-10 bg-[#4A2F1B] text-white px-6 py-2 rounded-full text-[10px] sm:text-xs font-black tracking-[0.2em] uppercase shadow-lg mb-8 inline-block animate-in fade-in slide-in-from-top-4 duration-700">
-            Parent Enquiry Form
+
+      {/* Header Section */}
+      <div className="relative bg-white px-2 py-6 sm:py-8 text-center border-b border-gray-100">
+        <span className="relative z-10 bg-yellow-100 text-[#4A2F1B] border border-yellow-200 px-5 py-1.5 rounded-full text-[10px] sm:text-xs font-black tracking-[0.2em] uppercase shadow-sm mb-4 inline-block">
+          Parent Enquiry Form
+        </span>
+
+        <div className="relative z-10 flex flex-col items-center justify-center gap-6 mt-2">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10">
+            <div className="relative group">
+              <img
+                src={logo}
+                alt="Honey Hive Logo"
+                className="relative w-48 h-48 sm:w-48 sm:h-64 object-contain transform transition-all duration-700 hover:scale-110 drop-shadow-xl"
+              />
+            </div>
+            {/* <div className="flex flex-col items-center sm:items-start space-y-3 pl-6">
+              <img
+                src={honeyLogo}
+                alt="Honey Hive Montessori House"
+                className="w-full max-w-[380px] sm:max-w-[600px] object-contain sm:ml-6"
+              />
+              <div className="hidden sm:block h-[3px] w-24 bg-yellow-400 rounded-full ml-1" />
+            </div> */}
+          </div>
+
+          <div className="mt-3 transition-transform duration-500 hover:scale-105 active:scale-95">
+          </div>
+        </div>
+
+        <p className="relative z-10 text-sm sm:text-base mt-4 text-gray-600 leading-relaxed max-w-md mx-auto italic font-medium">
+          Managed by:{" "}
+          <span className="text-[#4A2F1B] font-bold text-base sm:text-lg">
+            Honey Hive Montessori Educational Trust
           </span>
+          <br />
+          <span className="text-xs sm:text-sm text-gray-500">
+            (Registered under Tamilnadu. Reg No: 118/2021)
+          </span>
+        </p>
+      </div>
 
-          <div className="relative z-10 flex flex-col items-center justify-center gap-6 mt-2">
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-yellow-400 rounded-full blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-700" />
-                <img
-                  src={logo}
-                  alt="Honey Hive Logo"
-                  className="relative w-32 h-32 sm:w-40 sm:h-40 object-contain transform transition-all duration-700 hover:scale-110 drop-shadow-2xl animate-in zoom-in-75 duration-500"
-                />
-              </div>
+      {/* Form Body */}
+      <div className="py-6 sm:py-8 px-2 sm:px-6">
+        <p className="text-sm sm:text-base text-gray-600 text-center mb-6 max-w-xl mx-auto">
+          Thank you for your interest! Please fill out this brief form so we can
+          learn more about your family and child.
+        </p>
 
-              <div className="flex flex-col items-center sm:items-start space-y-3">
-                <img
-                  src={honeyLogo}
-                  alt="Honey Hive Montessori House"
-                  className="w-full max-w-[280px] sm:max-w-[480px] object-contain transform transition-all duration-700 hover:brightness-105 drop-shadow-lg animate-in fade-in slide-in-from-right-4 duration-700"
-                />
-                <div className="hidden sm:block h-1.5 w-24 bg-yellow-400 rounded-full ml-1" />
-              </div>
-            </div>
+        <form className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
 
-            <div className="mt-4 transition-transform duration-500 hover:scale-105 active:scale-95">
-              <div className="inline-block bg-[#E63946] text-white px-8 py-3 rounded-full text-sm sm:text-base font-black shadow-[0_10px_25px_-5px_rgba(230,57,70,0.4)] transform -rotate-1 hover:rotate-0 transition-all cursor-pointer select-none">
-                The best place to Bee! 🐝
-              </div>
+          <div className="md:col-span-2">
+            <label className={labelClass}>
+              Date of Enquiry <RequiredStar />
+            </label>
+            <input
+              type="date"
+              name="date_of_enquiry"
+              value={formData.date_of_enquiry}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+
+          <div className={sectionHeader}>
+            <span className="bg-yellow-100 text-[#4A2F1B] w-8 h-8 rounded-full flex items-center justify-center text-sm mr-2">1</span>
+            Child’s Information
+          </div>
+
+          <div className="md:col-span-2">
+            <label className={labelClass}>
+              Name of the Child <RequiredStar />
+            </label>
+            <input
+              type="text"
+              name="child_name"
+              value={formData.child_name}
+              onChange={handleChange}
+              className={inputClass}
+              placeholder="Enter child's full name"
+            />
+          </div>
+
+          <div>
+            <label className={labelClass}>
+              Date of Birth <RequiredStar />
+            </label>
+            <input
+              type="date"
+              name="dob"
+              value={formData.dob}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label className={labelClass}>
+              Age (Auto Calculated) <RequiredStar />
+            </label>
+            <div className="flex h-[50px] mt-1.5 bg-gray-50 border border-gray-200 rounded-xl items-center px-4 overflow-hidden">
+              {formData.age_years || formData.age_months ? (
+                <span className="font-semibold text-[#4A2F1B]">
+                  {formData.age_years} <span className="text-gray-500 font-normal text-sm mr-2">Yrs</span>
+                  {formData.age_months} <span className="text-gray-500 font-normal text-sm">Mos</span>
+                </span>
+              ) : (
+                <span className="text-gray-400">Select DOB first</span>
+              )}
             </div>
           </div>
 
-          <p className="relative z-10 text-[10px] sm:text-xs mt-10 text-gray-500 leading-relaxed max-w-lg mx-auto italic font-medium opacity-80">
-            Managed by:{" "}
-            <span className="text-[#4A2F1B] font-bold">
-              Honey Hive Montessori Educational Trust
-            </span>
-            <br />
-            <span className="text-[9px] sm:text-[11px]">
-              (Registered under Tamilnadu. Reg No: 118/2021)
-            </span>
-          </p>
-        </div>
-
-        {/* Form Body */}
-        <div className="p-6 sm:p-10">
-          <p className="text-sm sm:text-base text-gray-600 text-center mb-8">
-            Thank you for your interest! Please fill out this form so we can
-            learn more about your family.
-          </p>
-
-          <form className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-            <div className="md:col-span-2">
-              <label className={labelClass}>
-                Date of Enquiry
-                <RequiredStar />
-              </label>
-              <input
-                type="date"
-                name="date_of_enquiry"
-                value={formData.date_of_enquiry}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-
-            <div className={sectionHeader}>Child’s Information</div>
-
-            <div className="md:col-span-2">
-              <label className={labelClass}>
-                Name of the Child
-                <RequiredStar />
-              </label>
-              <input
-                type="text"
-                name="child_name"
-                value={formData.child_name}
-                onChange={handleChange}
-                className={inputClass}
-                placeholder="Full Name"
-              />
-            </div>
-
-            <div>
-              <label className={labelClass}>
-                Date of Birth
-                <RequiredStar />
-              </label>
-              <input
-                type="date"
-                name="dob"
-                value={formData.dob}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-
-            <div>
-              <label className={labelClass}>
-                Age (Auto Calculated)
-                <RequiredStar />
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="number"
-                  name="age_years"
-                  value={formData.age_years}
-                  readOnly
-                  className={inputClass + " bg-gray-100 cursor-not-allowed"}
-                  placeholder="Yrs"
-                />
-                <input
-                  type="number"
-                  name="age_months"
-                  value={formData.age_months}
-                  readOnly
-                  className={inputClass + " bg-gray-100 cursor-not-allowed"}
-                  placeholder="Mos"
-                />
-              </div>
-            </div>
-
-            <div className="md:col-span-2">
-              <label className={labelClass}>
-                Gender
-                <RequiredStar />
-              </label>
-              <div className="flex flex-wrap gap-4 mt-2">
-                {["Male", "Female"].map((g) => (
-                  <label
-                    key={g}
-                    className="flex items-center space-x-2 cursor-pointer bg-gray-50 px-4 py-2 rounded-lg border border-gray-200 hover:bg-yellow-50 transition-colors"
-                  >
-                    <input
-                      type="radio"
-                      name="gender"
-                      value={g}
-                      checked={formData.gender === g}
-                      onChange={handleChange}
-                      className="w-4 h-4 text-yellow-600 focus:ring-yellow-500"
-                    />
-                    <span className="text-sm font-medium text-gray-700">
-                      {g}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="md:col-span-2">
-              <label className={labelClass}>
-                Previous School / Daycare
-                <RequiredStar />
-              </label>
-              <input
-                type="text"
-                name="previous_school"
-                value={formData.previous_school}
-                onChange={handleChange}
-                className={inputClass}
-                placeholder="Enter 'None' if first school"
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className={labelClass}>
-                Languages Spoken at Home
-                <RequiredStar />
-              </label>
-              <input
-                type="text"
-                name="languages_spoken"
-                value={formData.languages_spoken}
-                onChange={handleChange}
-                className={inputClass}
-                placeholder="e.g. English, Tamil"
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className={labelClass + " mb-2"}>
-                Admission Sought For
-                <RequiredStar />
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {admissionOptions.map((opt) => (
-                  <label
-                    key={opt}
-                    className="flex items-center p-3 border rounded-xl cursor-pointer hover:bg-yellow-50 transition-all"
-                  >
-                    <input
-                      type="radio"
-                      name="admission_sought_for"
-                      value={opt}
-                      checked={formData.admission_sought_for === opt}
-                      onChange={handleChange}
-                      className="w-5 h-5 text-yellow-600 focus:ring-yellow-500"
-                    />
-                    <span className="ml-3 text-sm text-gray-700 font-medium">
-                      {opt}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className={sectionHeader}>Parent/Guardian Information</div>
-
-            <div className="md:col-span-2">
-              <label className={labelClass}>
-                Parent Name
-                <RequiredStar />
-              </label>
-              <input
-                type="text"
-                name="parent_name"
-                value={formData.parent_name}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-
-            <div>
-              <label className={labelClass}>
-                Relationship to Child
-                <RequiredStar />
-              </label>
-              <input
-                type="text"
-                name="relationship"
-                value={formData.relationship}
-                onChange={handleChange}
-                className={inputClass}
-                placeholder="Mother / Father"
-              />
-            </div>
-
-            <div>
-              <label className={labelClass}>
-                Phone Number
-                <RequiredStar />
-              </label>
-              <input
-                type="tel"
-                name="phone_number"
-                value={formData.phone_number}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className={labelClass}>
-                Email Address
-                <RequiredStar />
-              </label>
-              <input
-                type="email"
-                name="email_id"
-                value={formData.email_id}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className={labelClass}>
-                Residential Address
-                <RequiredStar />
-              </label>
-              <textarea
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                className={inputClass}
-                rows={3}
-              />
-            </div>
-
-            <div className={sectionHeader}>Additional Information</div>
-
-            <div className="md:col-span-2">
-              <label className={labelClass + " mb-2"}>
-                How did you hear about us?
-                <RequiredStar />
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {hearOptions.map((opt) => (
-                  <label
-                    key={opt}
-                    className="flex items-center p-3 border rounded-xl cursor-pointer hover:bg-yellow-50 transition-all"
-                  >
-                    <input
-                      type="radio"
-                      name="how_did_you_hear"
-                      value={opt}
-                      checked={formData.how_did_you_hear === opt}
-                      onChange={handleChange}
-                      className="w-5 h-5 text-yellow-600 focus:ring-yellow-500"
-                    />
-                    <span className="ml-3 text-sm text-gray-700 font-medium">
-                      {opt}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={saveData}
-              disabled={loading}
-              className="md:col-span-2 w-full mt-10 bg-[#4A2F1B] hover:bg-black text-white font-black py-4 rounded-2xl shadow-lg transform active:scale-[0.98] transition-all disabled:opacity-50 text-lg uppercase tracking-widest"
-            >
-              {loading ? "Processing..." : "Submit Enquiry"}
-            </button>
-          </form>
-        </div>
-
-        <div className="bg-gray-50 p-8 text-center border-t border-gray-200">
-          <div className="max-w-md mx-auto space-y-2">
-            <p className="font-bold text-[#4A2F1B] text-sm">
-              1-A Rama Associates, MCN Nagar Extn, Thoraipakkam, Chennai - 600
-              097.
-            </p>
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-gray-600">
-              <span className="flex items-center">
-                📧 honeyhivechennai@gmail.com
-              </span>
-              <span className="flex items-center">
-                🌐 honeyhivemontessorihouse.com
-              </span>
-            </div>
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs font-bold text-gray-700">
-              <span>📞 99529 00051</span>
-              <span>📞 97907 30051</span>
-              <span>☎️ 044-4850 2661</span>
+          <div className="md:col-span-2">
+            <label className={labelClass}>
+              Gender <RequiredStar />
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-2">
+              {["Male", "Female"].map((g) => (
+                <label key={g} className={getCardClass(formData.gender === g)}>
+                  <input
+                    type="radio"
+                    name="gender"
+                    value={g}
+                    checked={formData.gender === g}
+                    onChange={handleChange}
+                    className="w-4 h-4 text-yellow-500 focus:ring-yellow-500 border-gray-300"
+                  />
+                  <span className="ml-3 font-semibold text-gray-700">{g}</span>
+                </label>
+              ))}
             </div>
           </div>
+
+          <div className="md:col-span-2">
+            <label className={labelClass}>
+              Previous School / Daycare <RequiredStar />
+            </label>
+            <input
+              type="text"
+              name="previous_school"
+              value={formData.previous_school}
+              onChange={handleChange}
+              className={inputClass}
+              placeholder="Enter 'None' if this is their first school"
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className={labelClass}>
+              Languages Spoken at Home <RequiredStar />
+            </label>
+            <input
+              type="text"
+              name="languages_spoken"
+              value={formData.languages_spoken}
+              onChange={handleChange}
+              className={inputClass}
+              placeholder="e.g. English, Tamil, Hindi"
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className={labelClass + " mb-2"}>
+              Admission Sought For <RequiredStar />
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {admissionOptions.map((opt) => (
+                <label key={opt} className={getCardClass(formData.admission_sought_for === opt)}>
+                  <input
+                    type="radio"
+                    name="admission_sought_for"
+                    value={opt}
+                    checked={formData.admission_sought_for === opt}
+                    onChange={handleChange}
+                    className="w-5 h-5 text-yellow-500 focus:ring-yellow-500 border-gray-300"
+                  />
+                  <span className="ml-3 text-sm text-gray-700 font-semibold">{opt}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className={sectionHeader}>
+            <span className="bg-yellow-100 text-[#4A2F1B] w-8 h-8 rounded-full flex items-center justify-center text-sm mr-2">2</span>
+            Parent/Guardian Details
+          </div>
+
+          <div className="md:col-span-2">
+            <label className={labelClass}>
+              Parent / Guardian Name <RequiredStar />
+            </label>
+            <input
+              type="text"
+              name="parent_name"
+              value={formData.parent_name}
+              onChange={handleChange}
+              className={inputClass}
+              placeholder="Full Name"
+            />
+          </div>
+
+          <div>
+            <label className={labelClass}>
+              Relationship to Child <RequiredStar />
+            </label>
+            <input
+              type="text"
+              name="relationship"
+              value={formData.relationship}
+              onChange={handleChange}
+              className={inputClass}
+              placeholder="e.g. Mother, Father"
+            />
+          </div>
+
+          <div>
+            <label className={labelClass}>
+              Phone Number <RequiredStar />
+            </label>
+            <input
+              type="tel"
+              name="phone_number"
+              value={formData.phone_number}
+              onChange={handleChange}
+              className={inputClass}
+              placeholder="+91"
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className={labelClass}>
+              Email Address <RequiredStar />
+            </label>
+            <input
+              type="email"
+              name="email_id"
+              value={formData.email_id}
+              onChange={handleChange}
+              className={inputClass}
+              placeholder="your.email@example.com"
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className={labelClass}>
+              Residential Address <RequiredStar />
+            </label>
+            <textarea
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              className={inputClass}
+              placeholder="Enter full address"
+              rows={3}
+            />
+          </div>
+
+          <div className={sectionHeader}>
+            <span className="bg-yellow-100 text-[#4A2F1B] w-8 h-8 rounded-full flex items-center justify-center text-sm mr-2">3</span>
+            Final Details
+          </div>
+
+          <div className="md:col-span-2">
+            <label className={labelClass + " mb-2"}>
+              How did you hear about us? <RequiredStar />
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {hearOptions.map((opt) => (
+                <label key={opt} className={getCardClass(formData.how_did_you_hear === opt)}>
+                  <input
+                    type="radio"
+                    name="how_did_you_hear"
+                    value={opt}
+                    checked={formData.how_did_you_hear === opt}
+                    onChange={handleChange}
+                    className="w-5 h-5 text-yellow-500 focus:ring-yellow-500 border-gray-300"
+                  />
+                  <span className="ml-3 text-sm text-gray-700 font-semibold">{opt}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={saveData}
+            disabled={loading}
+            className="md:col-span-2 w-full mt-8 bg-[#4A2F1B] hover:bg-[#321f11] text-white font-black py-4 rounded-2xl shadow-[0_8px_20px_-6px_rgba(74,47,27,0.5)] transform active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed text-lg uppercase tracking-widest flex justify-center items-center gap-2"
+          >
+            {loading ? (
+              <>
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </>
+            ) : (
+              "Submit Enquiry"
+            )}
+          </button>
+        </form>
+      </div>
+
+      {/* Footer */}
+      <div className="bg-white p-8 text-center border-t border-gray-100 mt-4">
+        <div className="max-w-md mx-auto space-y-3">
+
+          {/* Address */}
+          <p className="font-bold text-[#4A2F1B] text-base sm:text-lg">
+            1-A Rama Associates, MCN Nagar Extn, Thoraipakkam, Chennai - 600 097.
+          </p>
+
+          {/* Email + Website */}
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-x-6 gap-y-2 text-sm sm:text-base text-gray-600 font-medium">
+            <span className="flex items-center justify-center gap-1">
+              📧 honeyhivechennai@gmail.com
+            </span>
+            <span className="flex items-center justify-center gap-1">
+              🌐 honeyhivemontessorihouse.com
+            </span>
+          </div>
+
+          {/* Phone Numbers */}
+          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-base sm:text-lg font-black text-[#4A2F1B] pt-2">
+            <span>📞 99529 00051</span>
+            <span>📞 97907 30051</span>
+            <span>☎️ 044-4850 2661</span>
+          </div>
+
         </div>
       </div>
     </div>
+
   );
 };
 

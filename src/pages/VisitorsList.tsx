@@ -22,7 +22,29 @@ import {
   Edit2,
   Check,
   ChevronRight as ArrowRight,
+  LayoutDashboard,
+  TrendingUp,
+  TrendingDown,
+  Clock,
+  Briefcase,
+  Globe,
+  PieChart as PieChartIcon,
 } from "lucide-react";
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  Legend,
+} from "recharts";
 
 // --- FIX: IMPORT THE LOGO DIRECTLY ---
 import logoImg from "../assets/logo.png";
@@ -97,6 +119,75 @@ const VisitorsList = () => {
   const [tempRemarks, setTempRemarks] = useState("");
   const [isUpdatingRemarks, setIsUpdatingRemarks] = useState(false);
 
+  // Dashboard State
+  const [activeTab, setActiveTab] = useState<"overview" | "reports">("overview");
+
+  // Export State
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [exportStartDate, setExportStartDate] = useState("");
+  const [exportEndDate, setExportEndDate] = useState(new Date().toISOString().split("T")[0]);
+
+  // --- Dashboard Data Calculations ---
+  const stats = useMemo(() => {
+    const total = data.length;
+    const today = new Date().toISOString().split("T")[0];
+    const todayCount = data.filter((v) => v.created_at.startsWith(today)).length;
+
+    // Get date 7 days ago
+    const lastWeekDate = new Date();
+    lastWeekDate.setDate(lastWeekDate.getDate() - 7);
+    const lastWeekCount = data.filter(
+      (v) => new Date(v.created_at) > lastWeekDate
+    ).length;
+
+    return { total, todayCount, lastWeekCount };
+  }, [data]);
+
+  const chartData = useMemo(() => {
+    // Trend Data (last 14 days)
+    const last14Days = [...Array(14)]
+      .map((_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        return d.toISOString().split("T")[0];
+      })
+      .reverse();
+
+    const trend = last14Days.map((date) => ({
+      date: new Date(date).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
+      count: data.filter((v) => v.created_at.startsWith(date)).length,
+    }));
+
+    // Grade distribution
+    const grades = data.reduce((acc: any, v) => {
+      const g = v.admission_sought_for || "Unknown";
+      acc[g] = (acc[g] || 0) + 1;
+      return acc;
+    }, {});
+    const gradeDistribution = Object.entries(grades).map(([name, value]) => ({
+      name,
+      value,
+    }));
+
+    // Source distribution
+    const sources = data.reduce((acc: any, v) => {
+      const s = v.how_did_you_hear || "Other";
+      acc[s] = (acc[s] || 0) + 1;
+      return acc;
+    }, {});
+    const sourceDistribution = Object.entries(sources)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a: any, b: any) => b.value - a.value)
+      .slice(0, 5);
+
+    return { trend, gradeDistribution, sourceDistribution };
+  }, [data]);
+
+  const COLORS = ["#fbbf24", "#4A2F1B", "#fef3c7", "#f59e0b", "#78350f", "#d97706"];
+
   useEffect(() => {
     if (localStorage.getItem("honeyhive_auth") === "true") {
       setIsLoggedIn(true);
@@ -165,15 +256,38 @@ const VisitorsList = () => {
 
   // CSV Export Logic
   const handleExportCSV = () => {
-    if (filteredData.length === 0) {
-      toast.error("No records to export");
+    let dataToExport = filteredData;
+
+    if (exportStartDate || exportEndDate) {
+      dataToExport = data.filter((v) => {
+        const enquiryDate = v.date_of_enquiry; // Format "DD/MM/YYYY" or "YYYY-MM-DD"
+        // Convert to comparable date
+        let d: Date;
+        if (enquiryDate.includes("/")) {
+          const [day, month, year] = enquiryDate.split("/");
+          d = new Date(`${year}-${month}-${day}`);
+        } else {
+          d = new Date(enquiryDate);
+        }
+
+        const start = exportStartDate ? new Date(exportStartDate) : null;
+        const end = exportEndDate ? new Date(exportEndDate) : null;
+
+        if (start && d < start) return false;
+        if (end && d > end) return false;
+        return true;
+      });
+    }
+
+    if (dataToExport.length === 0) {
+      toast.error("No records found for the selected range");
       return;
     }
 
     const headers = CSV_HEADERS.map((h) =>
       h.replace(/_/g, " ").toUpperCase()
     ).join(",");
-    const rows = filteredData.map((v) =>
+    const rows = dataToExport.map((v) =>
       CSV_HEADERS.map(
         (header) => `"${String(v[header] || "").replace(/"/g, '""')}"`
       ).join(",")
@@ -186,11 +300,12 @@ const VisitorsList = () => {
     link.setAttribute("href", url);
     link.setAttribute(
       "download",
-      `HoneyHive_Entries_${new Date().toLocaleDateString()}.csv`
+      `HoneyHive_Entries_${exportStartDate || 'all'}_to_${exportEndDate || 'today'}.csv`
     );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    setIsExportModalOpen(false);
   };
 
   const filteredData = useMemo(() => {
@@ -333,12 +448,33 @@ const VisitorsList = () => {
 
         </div>
         <nav className="flex-1 space-y-2">
-          <button className="w-full flex items-center gap-3 px-5 py-4 bg-yellow-50 text-yellow-700 rounded-2xl font-bold text-sm">
+          <button
+            onClick={() => {
+              setActiveTab("overview");
+              setSelectedVisitor(null);
+            }}
+            className={`w-full flex items-center gap-3 px-5 py-4 rounded-2xl font-bold text-sm transition-all ${activeTab === "overview" && !selectedVisitor
+              ? "bg-yellow-50 text-yellow-700"
+              : "text-slate-500 hover:bg-slate-50"
+              }`}
+          >
+            <LayoutDashboard size={18} /> Overview
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("reports");
+              setSelectedVisitor(null);
+            }}
+            className={`w-full flex items-center gap-3 px-5 py-4 rounded-2xl font-bold text-sm transition-all ${activeTab === "reports" && !selectedVisitor
+              ? "bg-yellow-50 text-yellow-700"
+              : "text-slate-500 hover:bg-slate-50"
+              }`}
+          >
             <User size={18} /> Enquiries
           </button>
           <button
-            onClick={handleExportCSV}
-            className="w-full flex items-center gap-3 px-5 py-4 text-slate-500 hover:bg-slate-50 rounded-2xl font-bold text-sm"
+            onClick={() => setIsExportModalOpen(true)}
+            className="w-full flex items-center gap-3 px-5 py-4 text-slate-500 hover:bg-slate-50 rounded-2xl font-bold text-sm transition-all"
           >
             <FileSpreadsheet size={18} /> Export CSV
           </button>
@@ -355,169 +491,379 @@ const VisitorsList = () => {
       </aside>
 
       <main className="lg:ml-72 p-4 lg:p-10 max-w-6xl mx-auto pb-24">
-        <header className="relative flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6 p-6 sm:p-8 bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-400/10 rounded-full -mr-16 -mt-16 blur-3xl" />
-          <div className="relative z-10">
-            <h1 className="text-3xl sm:text-4xl font-black text-slate-900 uppercase tracking-tighter">
-              Admin <span className="text-yellow-500">Dashboard</span>
-            </h1>
-            <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">
-              {filteredData.length} Total Enquiries Found
-            </p>
+        {selectedVisitor ? (
+          /* --- DETAIL VIEW (Keeping existing functionality) --- */
+          <div className="animate-in fade-in duration-300">
+            {/* We'll use the drawer for detail view now as per the user's latest file structure */}
           </div>
-          <div className="relative z-10 flex items-center gap-3">
-            <button
-              onClick={fetchVisitors}
-              className="flex items-center justify-center gap-2 bg-[#4A2F1B] text-white px-8 py-4 rounded-2xl font-black uppercase text-xs shadow-lg hover:shadow-yellow-500/20 active:scale-95 transition-all"
-            >
-              <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
-              {loading ? "Updating..." : "Refresh Records"}
-            </button>
-          </div>
-        </header>
-
-        {/* Search & Filter */}
-        <div className="flex gap-3 mb-8">
-          <div className="relative flex-1">
-            <Search
-              className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
-              size={18}
-            />
-            <input
-              type="text"
-              placeholder="Search child, parent or phone..."
-              className="w-full pl-14 pr-6 py-4 bg-white border border-slate-100 rounded-2xl shadow-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <button
-            onClick={() => setShowFilters(true)}
-            className="p-4 bg-white border border-slate-100 rounded-2xl shadow-sm text-slate-500 hover:text-yellow-600 hover:border-yellow-200 transition-all"
-          >
-            <Filter size={20} />
-          </button>
-        </div>
-
-        {/* LIST VIEW */}
-        <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
-          {/* Desktop Header */}
-          <div className="hidden lg:grid lg:grid-cols-[2fr_1fr_1.5fr_1.2fr_1.2fr_auto] gap-4 px-8 py-5 bg-slate-50/50 border-b border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-400">
-            <div>Child Name</div>
-            <div>Grade</div>
-            <div>Parent</div>
-            <div>Phone</div>
-            <div>Enquiry Date</div>
-            <div className="text-right">Actions</div>
-          </div>
-
-          <div className="divide-y divide-slate-50">
-            {currentItems.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => setSelectedVisitor(item)}
-                className="group flex flex-col lg:grid lg:grid-cols-[2fr_1fr_1.5fr_1.2fr_1.2fr_auto] gap-4 px-6 lg:px-8 py-5 lg:items-center hover:bg-slate-50/80 transition-all cursor-pointer"
+        ) : activeTab === "overview" ? (
+          /* --- DASHBOARD OVERVIEW --- */
+          <div className="animate-in fade-in duration-500 space-y-8">
+            <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div>
+                <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">
+                  System <span className="text-yellow-500">Overview</span>
+                </h1>
+                <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">
+                  Real-time analytics & performance
+                </p>
+              </div>
+              <button
+                onClick={fetchVisitors}
+                className="flex items-center justify-center gap-2 bg-[#4A2F1B] text-white px-6 py-3 rounded-2xl font-black uppercase text-xs shadow-lg hover:shadow-yellow-500/20 active:scale-95 transition-all"
               >
-                {/* Mobile & Desktop: Child Name + Gender */}
-                <div className="flex items-center gap-4 min-w-0">
-                  <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-xl group-hover:bg-yellow-100 transition-colors shrink-0">
-                    {item.gender?.toLowerCase() === "male" ? "👦" : "👧"}
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="font-black text-slate-800 text-sm lg:text-base truncate uppercase tracking-tight">
-                      {item.child_name}
-                    </h3>
-                    <span className="lg:hidden text-yellow-600 text-[10px] font-black uppercase">
-                      {item.admission_sought_for}
-                    </span>
-                  </div>
-                </div>
+                <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+                Refresh Data
+              </button>
+            </header>
 
-                {/* Desktop: Grade */}
-                <div className="hidden lg:block">
-                  <span className="inline-flex px-2.5 py-1 bg-yellow-50 text-yellow-700 rounded-lg text-[11px] font-black uppercase">
-                    {item.admission_sought_for}
+            {/* Metric Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <MetricCard
+                title="Total Enquiries"
+                value={stats.total}
+                icon={<Users className="text-yellow-600" size={24} />}
+                trend="+12%"
+                trendUp={true}
+              />
+              <MetricCard
+                title="Today's Enquiries"
+                value={stats.todayCount}
+                icon={<Clock className="text-orange-600" size={24} />}
+                trend="New"
+                trendUp={true}
+              />
+              <MetricCard
+                title="Weekly Activity"
+                value={stats.lastWeekCount}
+                icon={<TrendingUp className="text-emerald-600" size={24} />}
+                trend="Active"
+                trendUp={true}
+              />
+            </div>
+
+            {/* Charts Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Trend Chart */}
+              <div className="bg-white p-6 sm:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="font-black text-slate-800 uppercase tracking-tight flex items-center gap-2">
+                    <TrendingUp size={20} className="text-yellow-500" /> Enquiry
+                    Trend
+                  </h3>
+                  <span className="text-[10px] font-black text-slate-400 uppercase">
+                    Last 14 Days
                   </span>
                 </div>
-
-                {/* Parent Info */}
-                <div className="flex items-center gap-2 text-sm font-bold text-slate-500">
-                  <div className="lg:hidden w-5 text-slate-300"><User size={14} /></div>
-                  <span className="truncate">{item.parent_name}</span>
-                </div>
-
-                {/* Phone */}
-                <div className="flex items-center gap-2 text-sm font-bold text-slate-500">
-                  <div className="lg:hidden w-5 text-slate-300"><Phone size={14} /></div>
-                  <span className="tabular-nums whitespace-nowrap">{item.phone_number}</span>
-                </div>
-
-                {/* Date */}
-                <div className="flex items-center gap-2 text-sm font-bold text-slate-400 lg:text-slate-500">
-                  <div className="lg:hidden w-5 text-slate-300"><Calendar size={14} /></div>
-                  <span className="whitespace-nowrap italic lg:not-italic">{item.date_of_enquiry}</span>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center justify-end gap-1 mt-2 lg:mt-0">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteEntry(item.id, item.child_name);
-                    }}
-                    className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition"
-                    title="Delete"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                  <button
-                    className="p-2.5 text-slate-300 hover:text-yellow-600 lg:group-hover:translate-x-1 transition-all"
-                    title="View Profile"
-                  >
-                    <ArrowRight size={18} />
-                  </button>
+                <div className="h-[300px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData.trend}>
+                      <defs>
+                        <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#fbbf24" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#fbbf24" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis
+                        dataKey="date"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fill: "#94a3b8", fontSize: 10, fontWeight: 700 }}
+                        dy={10}
+                      />
+                      <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fill: "#94a3b8", fontSize: 10, fontWeight: 700 }}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#fff",
+                          borderRadius: "16px",
+                          border: "1px solid #f1f5f9",
+                          boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+                        }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="count"
+                        stroke="#fbbf24"
+                        strokeWidth={4}
+                        fillOpacity={1}
+                        fill="url(#colorCount)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
-            ))}
-            {currentItems.length === 0 && (
-              <div className="p-20 text-center text-slate-400 font-bold">
-                No matching records found.
+
+              {/* Grade Distribution */}
+              <div className="bg-white p-6 sm:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="font-black text-slate-800 uppercase tracking-tight flex items-center gap-2">
+                    <PieChartIcon size={20} className="text-yellow-500" /> Grade
+                    Distribution
+                  </h3>
+                </div>
+                <div className="h-[300px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={chartData.gradeDistribution}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={100}
+                        paddingAngle={5}
+                        dataKey="value"
+                      >
+                        {chartData.gradeDistribution.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#fff",
+                          borderRadius: "16px",
+                          border: "none",
+                          boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+                        }}
+                      />
+                      <Legend
+                        verticalAlign="bottom"
+                        height={36}
+                        iconType="circle"
+                        formatter={(value) => (
+                          <span className="text-[10px] font-bold text-slate-500 uppercase">
+                            {value}
+                          </span>
+                        )}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Row - Sources */}
+            <div className="bg-white p-6 sm:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="font-black text-slate-800 uppercase tracking-tight flex items-center gap-2">
+                  <Globe size={20} className="text-yellow-500" /> Lead Sources
+                </h3>
+              </div>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData.sourceDistribution} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                    <XAxis type="number" hide />
+                    <YAxis
+                      dataKey="name"
+                      type="category"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: "#475569", fontSize: 11, fontWeight: 800 }}
+                      width={120}
+                    />
+                    <Tooltip
+                      cursor={{ fill: "#f8fafc" }}
+                      contentStyle={{
+                        backgroundColor: "#fff",
+                        borderRadius: "16px",
+                        border: "none",
+                        boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+                      }}
+                    />
+                    <Bar
+                      dataKey="value"
+                      fill="#fbbf24"
+                      radius={[0, 10, 10, 0]}
+                      barSize={30}
+                    >
+                      {chartData.sourceDistribution.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={index === 0 ? "#4A2F1B" : "#fbbf24"}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* --- LIST VIEW --- */
+          <div className="animate-in fade-in duration-300">
+            <header className="relative flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6 p-6 sm:p-8 bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-400/10 rounded-full -mr-16 -mt-16 blur-3xl" />
+              <div className="relative z-10">
+                <h1 className="text-3xl sm:text-4xl font-black text-slate-900 uppercase tracking-tighter">
+                  Admin <span className="text-yellow-500">Dashboard</span>
+                </h1>
+                <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">
+                  {filteredData.length} Total Enquiries Found
+                </p>
+              </div>
+              <div className="relative z-10 flex items-center gap-3">
+                <button
+                  onClick={fetchVisitors}
+                  className="flex items-center justify-center gap-2 bg-[#4A2F1B] text-white px-8 py-4 rounded-2xl font-black uppercase text-xs shadow-lg hover:shadow-yellow-500/20 active:scale-95 transition-all"
+                >
+                  <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+                  {loading ? "Updating..." : "Refresh Records"}
+                </button>
+              </div>
+            </header>
+
+            {/* Search & Filter */}
+            <div className="flex gap-3 mb-8">
+              <div className="relative flex-1">
+                <Search
+                  className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
+                  size={18}
+                />
+                <input
+                  type="text"
+                  placeholder="Search child, parent or phone..."
+                  className="w-full pl-14 pr-6 py-4 bg-white border border-slate-100 rounded-2xl shadow-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <button
+                onClick={() => setShowFilters(true)}
+                className="p-4 bg-white border border-slate-100 rounded-2xl shadow-sm text-slate-500 hover:text-yellow-600 hover:border-yellow-200 transition-all"
+              >
+                <Filter size={20} />
+              </button>
+            </div>
+
+            {/* LIST VIEW */}
+            <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
+              {/* Desktop Header */}
+              <div className="hidden lg:grid lg:grid-cols-[2fr_1fr_1.5fr_1.2fr_1.2fr_auto] gap-4 px-8 py-5 bg-slate-50/50 border-b border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <div>Child Name</div>
+                <div>Grade</div>
+                <div>Parent</div>
+                <div>Phone</div>
+                <div>Enquiry Date</div>
+                <div className="text-right">Actions</div>
+              </div>
+
+              <div className="divide-y divide-slate-50">
+                {currentItems.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => setSelectedVisitor(item)}
+                    className="group flex flex-col lg:grid lg:grid-cols-[2fr_1fr_1.5fr_1.2fr_1.2fr_auto] gap-4 px-6 lg:px-8 py-5 lg:items-center hover:bg-slate-50/80 transition-all cursor-pointer"
+                  >
+                    {/* Mobile & Desktop: Child Name + Gender */}
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-xl group-hover:bg-yellow-100 transition-colors shrink-0">
+                        {item.gender?.toLowerCase() === "male" ? "👦" : "👧"}
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="font-black text-slate-800 text-sm lg:text-base truncate uppercase tracking-tight">
+                          {item.child_name}
+                        </h3>
+                        <span className="lg:hidden text-yellow-600 text-[10px] font-black uppercase">
+                          {item.admission_sought_for}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Desktop: Grade */}
+                    <div className="hidden lg:block">
+                      <span className="inline-flex px-2.5 py-1 bg-yellow-50 text-yellow-700 rounded-lg text-[11px] font-black uppercase">
+                        {item.admission_sought_for}
+                      </span>
+                    </div>
+
+                    {/* Parent Info */}
+                    <div className="flex items-center gap-2 text-sm font-bold text-slate-500">
+                      <div className="lg:hidden w-5 text-slate-300"><User size={14} /></div>
+                      <span className="truncate">{item.parent_name}</span>
+                    </div>
+
+                    {/* Phone */}
+                    <div className="flex items-center gap-2 text-sm font-bold text-slate-500">
+                      <div className="lg:hidden w-5 text-slate-300"><Phone size={14} /></div>
+                      <span className="tabular-nums whitespace-nowrap">{item.phone_number}</span>
+                    </div>
+
+                    {/* Date */}
+                    <div className="flex items-center gap-2 text-sm font-bold text-slate-400 lg:text-slate-500">
+                      <div className="lg:hidden w-5 text-slate-300"><Calendar size={14} /></div>
+                      <span className="whitespace-nowrap italic lg:not-italic">{item.date_of_enquiry}</span>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center justify-end gap-1 mt-2 lg:mt-0">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteEntry(item.id, item.child_name);
+                        }}
+                        className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition"
+                        title="Delete"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                      <button
+                        className="p-2.5 text-slate-300 hover:text-yellow-600 lg:group-hover:translate-x-1 transition-all"
+                        title="View Profile"
+                      >
+                        <ArrowRight size={18} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {currentItems.length === 0 && (
+                  <div className="p-20 text-center text-slate-400 font-bold">
+                    No matching records found.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* PAGINATION CONTROLS */}
+            {totalPages > 1 && (
+              <div className="mt-10 flex items-center justify-center gap-4">
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((p) => p - 1)}
+                  className="p-3 bg-white border border-slate-200 rounded-xl disabled:opacity-30"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <div className="flex items-center gap-2 overflow-x-auto max-w-[200px] lg:max-w-none no-scrollbar">
+                  {[...Array(totalPages)].map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(i + 1)}
+                      className={`flex-shrink-0 w-10 h-10 rounded-xl font-black text-xs transition ${currentPage === i + 1
+                        ? "bg-slate-900 text-white shadow-lg"
+                        : "bg-white text-slate-400 hover:bg-slate-50"
+                        }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((p) => p + 1)}
+                  className="p-3 bg-white border border-slate-200 rounded-xl disabled:opacity-30"
+                >
+                  <ChevronRight size={20} />
+                </button>
               </div>
             )}
-          </div>
-        </div>
-
-        {/* PAGINATION CONTROLS */}
-        {totalPages > 1 && (
-          <div className="mt-10 flex items-center justify-center gap-4">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage((p) => p - 1)}
-              className="p-3 bg-white border border-slate-200 rounded-xl disabled:opacity-30"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <div className="flex items-center gap-2 overflow-x-auto max-w-[200px] lg:max-w-none no-scrollbar">
-              {[...Array(totalPages)].map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`flex-shrink-0 w-10 h-10 rounded-xl font-black text-xs transition ${currentPage === i + 1
-                    ? "bg-slate-900 text-white shadow-lg"
-                    : "bg-white text-slate-400 hover:bg-slate-50"
-                    }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </div>
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage((p) => p + 1)}
-              className="p-3 bg-white border border-slate-200 rounded-xl disabled:opacity-30"
-            >
-              <ChevronRight size={20} />
-            </button>
           </div>
         )}
       </main>
@@ -525,7 +871,7 @@ const VisitorsList = () => {
       {/* MOBILE EXPORT FAB (Floating Action Button) */}
       <div className="fixed bottom-6 right-6 flex flex-col gap-3 lg:hidden z-50">
         <button
-          onClick={handleExportCSV}
+          onClick={() => setIsExportModalOpen(true)}
           className="w-14 h-14 bg-yellow-400 text-slate-900 rounded-full flex items-center justify-center shadow-2xl active:scale-90 transition border-4 border-white"
         >
           <FileSpreadsheet size={24} />
@@ -767,11 +1113,93 @@ const VisitorsList = () => {
         </div>
       )
       }
-    </div >
+
+      {/* EXPORT DATE RANGE MODAL */}
+      {isExportModalOpen && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            onClick={() => setIsExportModalOpen(false)}
+          />
+          <div className="relative bg-white w-full max-w-sm rounded-[2.5rem] p-10 shadow-2xl animate-in zoom-in-95 overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-yellow-400/10 rounded-full -mr-12 -mt-12 blur-2xl" />
+
+            <div className="relative z-10 text-center mb-8">
+              <div className="w-16 h-16 bg-yellow-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <FileSpreadsheet className="text-yellow-600" size={32} />
+              </div>
+              <h2 className="text-2xl font-black uppercase tracking-tight">Export <span className="text-yellow-500">Records</span></h2>
+              <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">Select date range for CSV</p>
+            </div>
+
+            <div className="space-y-6 mb-10 relative z-10">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">From Date</label>
+                <input
+                  type="date"
+                  value={exportStartDate}
+                  onChange={(e) => setExportStartDate(e.target.value)}
+                  max={new Date().toISOString().split("T")[0]}
+                  className="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl font-bold text-slate-700 outline-none focus:border-yellow-400 focus:bg-white transition-all"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">To Date</label>
+                <input
+                  type="date"
+                  value={exportEndDate}
+                  onChange={(e) => setExportEndDate(e.target.value)}
+                  max={new Date().toISOString().split("T")[0]}
+                  className="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl font-bold text-slate-700 outline-none focus:border-yellow-400 focus:bg-white transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 relative z-10">
+              <button
+                onClick={handleExportCSV}
+                className="w-full bg-slate-900 hover:bg-black text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:shadow-yellow-500/10 active:scale-95 transition-all flex items-center justify-center gap-3"
+              >
+                <Download size={18} />
+                Download CSV
+              </button>
+              <button
+                onClick={() => setIsExportModalOpen(false)}
+                className="w-full py-4 text-[10px] font-black uppercase text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
 // --- Small Helpers ---
+const MetricCard = ({ title, value, icon, trend, trendUp }: any) => (
+  <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 group">
+    <div className="flex items-center justify-between mb-4">
+      <div className="p-3 bg-slate-50 rounded-2xl group-hover:bg-yellow-50 transition-colors">
+        {icon}
+      </div>
+      <div
+        className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${trendUp ? "bg-emerald-50 text-emerald-600" : "bg-slate-50 text-slate-400"
+          }`}
+      >
+        {trend}
+      </div>
+    </div>
+    <div className="space-y-1">
+      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+        {title}
+      </h4>
+      <p className="text-3xl font-black text-slate-900 tabular-nums">{value}</p>
+    </div>
+  </div>
+);
+
 const DataGroup = ({ icon, title, children }: any) => (
   <div className="space-y-5">
     <h4 className="flex items-center gap-2 text-xs font-black uppercase text-slate-400 border-b border-slate-100 pb-2">
