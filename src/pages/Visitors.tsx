@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Lottie from "lottie-react";
-import { supabase } from "../supabaseClient";
+import { API_URL } from "../config";
 import logo from "../assets/logo.png";
 import beeAnimation from "../assets/BEE-lieve.json";
 import honeyLogo from "../assets/honey.png";
@@ -139,7 +139,6 @@ const Visitors = () => {
       "parent_name",
       "relationship",
       "phone_number",
-      "email_id",
       "address",
       "how_did_you_hear",
     ];
@@ -162,10 +161,19 @@ const Visitors = () => {
     }
     setLoading(true);
     try {
-      const { data, error } = await supabase.from("honeyhive").insert([formData]).select();
+      const response = await fetch(`${API_URL}/enquiry`, {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-      if (error) {
-        toast.error("Error: " + error.message);
+      const result = await response.json();
+
+      if (!result.success) {
+        toast.error("Error: " + result.message);
         return;
       }
 
@@ -464,7 +472,7 @@ const Visitors = () => {
 
           <div className="md:col-span-2">
             <label className={labelClass}>
-              Email Address <RequiredStar />
+              Email Address
             </label>
             <input
               type="email"

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { supabase } from "../supabaseClient";
+import { API_URL } from "../config";
 import {
   LogOut,
   Search,
@@ -107,8 +107,12 @@ const VisitorsList = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({ gender: "all", admission: "all" });
 
-  const [phone, setPhone] = useState("");
-  const [pin, setPin] = useState("");
+  const [phone, setPhone] = useState(""); // Kept for potential compatibility if needed, but using email now
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -189,11 +193,23 @@ const VisitorsList = () => {
   const COLORS = ["#fbbf24", "#4A2F1B", "#fef3c7", "#f59e0b", "#78350f", "#d97706"];
 
   useEffect(() => {
-    if (localStorage.getItem("honeyhive_auth") === "true") {
-      setIsLoggedIn(true);
-      fetchVisitors();
-    }
+    checkSession();
   }, []);
+
+  const checkSession = async () => {
+    try {
+      const response = await fetch(`${API_URL}/auth/dashboard`, {
+        credentials: 'include'
+      });
+      const result = await response.json();
+      if (result.success) {
+        setIsLoggedIn(true);
+        fetchVisitors();
+      }
+    } catch (err) {
+      console.log("Session check failed or no session exists");
+    }
+  };
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(searchTerm.trim()), 300);
@@ -202,25 +218,45 @@ const VisitorsList = () => {
 
   const fetchVisitors = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("honeyhive")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (!error) setData(data || []);
-    setLoading(false);
+    try {
+      const response = await fetch(`${API_URL}/enquiries`, {
+        credentials: 'include'
+      });
+      const result = await response.json();
+      if (result.success) {
+        setData(result.data || []);
+      } else {
+        toast.error("Error fetching visitors: " + result.message);
+        if (response.status === 401) {
+          setIsLoggedIn(false);
+        }
+      }
+    } catch (err) {
+      toast.error("Failed to connect to server");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const deleteEntry = async (id: number, name: string) => {
+  const deleteEntry = async (id: string | number, name: string) => {
     if (
       window.confirm(`Are you sure you want to delete the enquiry for ${name}?`)
     ) {
-      const { error } = await supabase.from("honeyhive").delete().eq("id", id);
-      if (error) {
-        toast.error("Error deleting entry: " + error.message);
-      } else {
-        toast.success("Entry deleted successfully");
-        setData(data.filter((item) => item.id !== id));
-        if (selectedVisitor?.id === id) setSelectedVisitor(null);
+      try {
+        const response = await fetch(`${API_URL}/enquiry/${id}`, {
+          method: "DELETE",
+          credentials: 'include'
+        });
+        const result = await response.json();
+        if (result.success) {
+          toast.success("Entry deleted successfully");
+          setData(data.filter((item) => item.id !== id));
+          if (selectedVisitor?.id === id) setSelectedVisitor(null);
+        } else {
+          toast.error("Error deleting entry: " + result.message);
+        }
+      } catch (err) {
+        toast.error("Failed to connect to server");
       }
     }
   };
@@ -229,29 +265,39 @@ const VisitorsList = () => {
     if (!selectedVisitor) return;
 
     setIsUpdatingRemarks(true);
-    const { error } = await supabase
-      .from("honeyhive")
-      .update({ remarks: tempRemarks })
-      .eq("id", selectedVisitor.id);
+    try {
+      const response = await fetch(`${API_URL}/enquiry/${selectedVisitor.id}`, {
+        method: "PATCH",
+        credentials: 'include',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ remarks: tempRemarks }),
+      });
+      const result = await response.json();
 
-    if (error) {
-      toast.error("Error updating remarks: " + error.message);
-    } else {
-      toast.success("Remarks updated successfully");
-      // Update local state
-      setData((prev) =>
-        prev.map((item) =>
-          item.id === selectedVisitor.id
-            ? { ...item, remarks: tempRemarks }
-            : item
-        )
-      );
-      setSelectedVisitor((prev) =>
-        prev ? { ...prev, remarks: tempRemarks } : null
-      );
-      setIsEditingRemarks(false);
+      if (result.success) {
+        toast.success("Remarks updated successfully");
+        // Update local state
+        setData((prev) =>
+          prev.map((item) =>
+            item.id === selectedVisitor.id
+              ? { ...item, remarks: tempRemarks }
+              : item
+          )
+        );
+        setSelectedVisitor((prev) =>
+          prev ? { ...prev, remarks: tempRemarks } : null
+        );
+        setIsEditingRemarks(false);
+      } else {
+        toast.error("Error updating remarks: " + result.message);
+      }
+    } catch (err) {
+      toast.error("Failed to connect to server");
+    } finally {
+      setIsUpdatingRemarks(false);
     }
-    setIsUpdatingRemarks(false);
   };
 
   // CSV Export Logic
@@ -374,44 +420,106 @@ const VisitorsList = () => {
 
             <form
               className="space-y-4"
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
-                if (phone === "9952900051" && pin === "5577") {
-                  setIsLoggedIn(true);
-                  localStorage.setItem("honeyhive_auth", "true");
-                  fetchVisitors();
-                  toast.success("Welcome back, Chief!");
+                if (!otpSent) {
+                  // Step 1: Send OTP
+                  setIsSendingOtp(true);
+                  try {
+                    const response = await fetch(`${API_URL}/auth/send-otp`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ email }),
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                      setOtpSent(true);
+                      toast.success("Identity confirmed. OTP sent!");
+                    } else {
+                      toast.error(result.message || "Invalid admin email");
+                    }
+                  } catch (err) {
+                    toast.error("Failed to connect to server");
+                  } finally {
+                    setIsSendingOtp(false);
+                  }
                 } else {
-                  toast.error("Access Denied: Invalid Credentials");
+                  // Step 2: Verify OTP
+                  setIsVerifying(true);
+                  try {
+                    const response = await fetch(`${API_URL}/auth/verify-otp`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ email, otp }),
+                      credentials: 'include'
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                      setIsLoggedIn(true);
+                      fetchVisitors();
+                      toast.success("Welcome back, Admin!");
+                    } else {
+                      toast.error(result.message);
+                    }
+                  } catch (err) {
+                    toast.error("Failed to connect to server");
+                  } finally {
+                    setIsVerifying(false);
+                  }
                 }
               }}
             >
-              <div className="group">
-                <input
-                  type="tel"
-                  placeholder="Mobile Number"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full px-6 py-5 bg-slate-50 border-2 border-slate-50 rounded-2xl outline-none focus:border-yellow-400 focus:bg-white transition-all duration-300 text-slate-700 font-medium placeholder:text-slate-300"
-                />
-              </div>
-
-              <div className="group">
-                <input
-                  type="password"
-                  placeholder="Entry PIN"
-                  value={pin}
-                  onChange={(e) => setPin(e.target.value)}
-                  className="w-full px-6 py-5 bg-slate-50 border-2 border-slate-50 rounded-2xl outline-none focus:border-yellow-400 focus:bg-white transition-all duration-300 text-slate-700 font-medium placeholder:text-slate-300"
-                />
-              </div>
-
-              <button className="w-full bg-slate-900 hover:bg-black text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-2xl hover:shadow-yellow-500/20 active:scale-95 transition-all duration-300 flex items-center justify-center gap-3">
-                <span>Sign In</span>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
+              {!otpSent ? (
+                <div className="group animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <input
+                    type="email"
+                    placeholder="Admin Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-6 py-5 bg-slate-50 border-2 border-slate-50 rounded-2xl outline-none focus:border-yellow-400 focus:bg-white transition-all duration-300 text-slate-700 font-medium placeholder:text-slate-300"
+                    required
+                  />
+                  <button
+                    disabled={isSendingOtp}
+                    className="w-full mt-4 bg-slate-900 hover:bg-black text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-2xl transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50"
+                  >
+                    {isSendingOtp ? "Sending..." : "Request OTP"}
+                    {!isSendingOtp && (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              ) : (
+                <div className="group animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <p className="text-xs text-slate-500 mb-2 px-1">Enter the 6-digit code sent to {email}</p>
+                  <input
+                    type="text"
+                    placeholder="6-Digit OTP"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    maxLength={6}
+                    className="w-full px-6 py-5 bg-slate-50 border-2 border-slate-50 rounded-2xl outline-none focus:border-yellow-400 focus:bg-white transition-all duration-300 text-slate-700 font-medium placeholder:text-slate-300 tracking-[0.5em] text-center text-xl"
+                    required
+                  />
+                  <div className="flex flex-col gap-3 mt-4">
+                    <button
+                      disabled={isVerifying}
+                      className="w-full bg-slate-900 hover:bg-black text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-2xl transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50"
+                    >
+                      {isVerifying ? "Verifying..." : "Verify & Login"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setOtpSent(false); setOtp(""); }}
+                      className="text-slate-400 text-[10px] font-bold uppercase tracking-widest hover:text-slate-600 transition-colors"
+                    >
+                      ← Use different email
+                    </button>
+                  </div>
+                </div>
+              )}
             </form>
 
             <div className="mt-8 pt-6 border-t border-slate-50 flex justify-center">
@@ -480,9 +588,17 @@ const VisitorsList = () => {
           </button>
         </nav>
         <button
-          onClick={() => {
-            localStorage.clear();
+          onClick={async () => {
+            try {
+              await fetch(`${API_URL}/auth/logout`, {
+                method: "POST",
+                credentials: 'include'
+              });
+            } catch (err) {
+              console.error("Logout request failed");
+            }
             setIsLoggedIn(false);
+            setOtpSent(false);
           }}
           className="flex items-center gap-3 px-5 py-4 text-red-500 font-bold text-sm hover:bg-red-50 rounded-2xl transition"
         >
