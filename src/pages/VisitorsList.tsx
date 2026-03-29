@@ -198,7 +198,11 @@ const VisitorsList = () => {
 
   const checkSession = async () => {
     try {
+      const token = localStorage.getItem("admin_token");
       const response = await fetch(`${API_URL}/auth/dashboard`, {
+        headers: {
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        },
         credentials: 'include'
       });
       const result = await response.json();
@@ -219,7 +223,11 @@ const VisitorsList = () => {
   const fetchVisitors = async () => {
     setLoading(true);
     try {
+      const token = localStorage.getItem("admin_token");
       const response = await fetch(`${API_URL}/enquiries`, {
+        headers: {
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        },
         credentials: 'include'
       });
       const result = await response.json();
@@ -229,6 +237,7 @@ const VisitorsList = () => {
         toast.error("Error fetching visitors: " + result.message);
         if (response.status === 401) {
           setIsLoggedIn(false);
+          localStorage.removeItem("admin_token");
         }
       }
     } catch (err) {
@@ -243,8 +252,12 @@ const VisitorsList = () => {
       window.confirm(`Are you sure you want to delete the enquiry for ${name}?`)
     ) {
       try {
+        const token = localStorage.getItem("admin_token");
         const response = await fetch(`${API_URL}/enquiry/${id}`, {
           method: "DELETE",
+          headers: {
+            ...(token ? { "Authorization": `Bearer ${token}` } : {})
+          },
           credentials: 'include'
         });
         const result = await response.json();
@@ -266,11 +279,13 @@ const VisitorsList = () => {
 
     setIsUpdatingRemarks(true);
     try {
+      const token = localStorage.getItem("admin_token");
       const response = await fetch(`${API_URL}/enquiry/${selectedVisitor.id}`, {
         method: "PATCH",
         credentials: 'include',
         headers: {
           "Content-Type": "application/json",
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
         },
         body: JSON.stringify({ remarks: tempRemarks }),
       });
@@ -455,6 +470,9 @@ const VisitorsList = () => {
                     });
                     const result = await response.json();
                     if (result.success) {
+                      if (result.token) {
+                        localStorage.setItem("admin_token", result.token);
+                      }
                       setIsLoggedIn(true);
                       fetchVisitors();
                       toast.success("Welcome back, Admin!");
@@ -590,13 +608,18 @@ const VisitorsList = () => {
         <button
           onClick={async () => {
             try {
+              const token = localStorage.getItem("admin_token");
               await fetch(`${API_URL}/auth/logout`, {
                 method: "POST",
+                headers: {
+                  ...(token ? { "Authorization": `Bearer ${token}` } : {})
+                },
                 credentials: 'include'
               });
             } catch (err) {
               console.error("Logout request failed");
             }
+            localStorage.removeItem("admin_token");
             setIsLoggedIn(false);
             setOtpSent(false);
           }}
