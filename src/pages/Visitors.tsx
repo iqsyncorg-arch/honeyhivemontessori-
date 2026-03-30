@@ -217,15 +217,15 @@ const Visitors = () => {
 
   if (isSplashActive) {
     return (
-      <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-yellow-50 p-8">
+      <div className="relative flex min-h-screen flex-col items-center justify-start pt-[12vh] overflow-hidden bg-yellow-50 p-8">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-yellow-100 via-yellow-200 to-yellow-300 opacity-30" />
         <img
           src={treeImg}
           alt="Tree"
-          className="absolute -bottom-10 -left-10 w-[120%] sm:w-[100%] md:w-[85%] max-w-none object-contain opacity-100"
+          className="absolute -bottom-10 -left-10 w-[100%] sm:w-[85%] md:w-[70%] max-w-none object-contain opacity-100"
         />
         {/* Animated Bee positioned at the top left */}
-        <div className="absolute top-[18%] left-[5%] sm:left-[8%] z-20 w-40 drop-shadow-2xl sm:w-60 md:w-72 animate-bounce-slow py-4 transform -rotate-12">
+        <div className="absolute top-[18%] left-[5%] sm:left-[8%] z-20 w-40 drop-shadow-2xl sm:w-60 md:w-72 animate-bounce-slow py-4 transform -rotate-12 translate-y-12 -translate-x-4">
           <Lottie animationData={beeAnimation} loop={true} />
         </div>
 
@@ -234,27 +234,28 @@ const Visitors = () => {
             <img
               src={honeyLogo}
               alt="Honey Hive Montessori House"
-              className="w-full max-w-[900px] drop-shadow-md transition-transform duration-700 hover:scale-110 mx-auto transform translate-y-[17.7rem]"
+              className="w-full max-w-[900px] drop-shadow-md transition-transform duration-700 hover:scale-110 mx-auto"
             />
-
-            <p className="text-xs sm:text-base mt-6 text-black leading-relaxed max-w-md mx-auto italic font-black transform translate-y-56">
-              Managed by:{" "}
-              <span className="text-black">
-                Honey Hive Montessori Educational Trust
-              </span>
-              <br />
-              <span className="text-[10px] sm:text-xs font-black opacity-80">
-                (Registered under Tamilnadu. Reg No: 118/2021)
-              </span>
-            </p>
           </div>
+        </div>
 
-          <div className="mt-8 flex flex-col items-center space-y-4 transform translate-y-72">
-            <div className="flex space-x-2">
-              <span className="h-2 w-2 animate-bounce rounded-full bg-orange-600 [animation-delay:-0.3s]"></span>
-              <span className="h-2 w-2 animate-bounce rounded-full bg-orange-500 [animation-delay:-0.15s]"></span>
-              <span className="h-2 w-2 animate-bounce rounded-full bg-orange-400"></span>
-            </div>
+        {/* Managed by & Loading Dots shifted to the bottom */}
+        <div className="z-10 mt-auto flex flex-col items-center space-y-6 pb-12">
+          <p className="text-xs sm:text-base text-black leading-relaxed max-w-md mx-auto italic font-black text-center">
+            Managed by:{" "}
+            <span className="text-black">
+              Honey Hive Montessori Educational Trust
+            </span>
+            <br />
+            <span className="text-[10px] sm:text-xs font-black opacity-80">
+              (Registered under Tamilnadu. Reg No: 118/2021)
+            </span>
+          </p>
+
+          <div className="flex space-x-2">
+            <span className="h-2 w-2 animate-bounce rounded-full bg-orange-600 [animation-delay:-0.3s]"></span>
+            <span className="h-2 w-2 animate-bounce rounded-full bg-orange-500 [animation-delay:-0.15s]"></span>
+            <span className="h-2 w-2 animate-bounce rounded-full bg-orange-400"></span>
           </div>
         </div>
       </div>
