@@ -3,7 +3,7 @@ import Lottie from "lottie-react";
 import { API_URL } from "../config";
 import logo from "../assets/logo.png";
 import beeAnimation from "../assets/BEE-lieve.json";
-import honeyLogo from "../assets/honey.png";
+import honeyLogo from "../assets/honeytm.png";
 import treeImg from "../assets/tree.png";
 import { toast } from "sonner";
 import { Facebook, Instagram } from "lucide-react";
