@@ -222,7 +222,7 @@ const Visitors = () => {
         <img
           src={treeImg}
           alt="Tree"
-          className="absolute -bottom-10 -left-10 w-[150%] sm:w-[120%] md:w-[100%] max-w-none object-contain opacity-100"
+          className="absolute -bottom-10 -left-10 w-[120%] sm:w-[100%] md:w-[85%] max-w-none object-contain opacity-100"
         />
         {/* Animated Bee positioned at the top left */}
         <div className="absolute top-[18%] left-[5%] sm:left-[8%] z-20 w-40 drop-shadow-2xl sm:w-60 md:w-72 animate-bounce-slow py-4 transform -rotate-12">
@@ -234,10 +234,10 @@ const Visitors = () => {
             <img
               src={honeyLogo}
               alt="Honey Hive Montessori House"
-              className="w-full max-w-[900px] drop-shadow-md transition-transform duration-700 hover:scale-110 mx-auto transform translate-x-8 translate-y-44"
+              className="w-full max-w-[900px] drop-shadow-md transition-transform duration-700 hover:scale-110 mx-auto transform translate-y-[17.7rem]"
             />
 
-            <p className="text-xs sm:text-base mt-6 text-black leading-relaxed max-w-md mx-auto italic font-black transform translate-y-44">
+            <p className="text-xs sm:text-base mt-6 text-black leading-relaxed max-w-md mx-auto italic font-black transform translate-y-56">
               Managed by:{" "}
               <span className="text-black">
                 Honey Hive Montessori Educational Trust
@@ -249,7 +249,7 @@ const Visitors = () => {
             </p>
           </div>
 
-          <div className="mt-8 flex flex-col items-center space-y-4 transform translate-y-44">
+          <div className="mt-8 flex flex-col items-center space-y-4 transform translate-y-72">
             <div className="flex space-x-2">
               <span className="h-2 w-2 animate-bounce rounded-full bg-orange-600 [animation-delay:-0.3s]"></span>
               <span className="h-2 w-2 animate-bounce rounded-full bg-orange-500 [animation-delay:-0.15s]"></span>
